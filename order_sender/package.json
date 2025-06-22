@@ -3,9 +3,12 @@
   "version": "1.0.0",
   "main": "order_sender.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node order_sender.js"
   },
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "@dapr/dapr": "^3.5.2"
+  }
 }
