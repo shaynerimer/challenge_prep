@@ -1,0 +1,16 @@
+{
+  "name": "order_processor",
+  "version": "1.0.0",
+  "main": "order_processor.js",
+  "scripts": {
+    "start": "node order_processor.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^5.1.0",
+    "uuid": "^11.1.0",
+    "xstate": "^5.20.0"
+  }
+}
