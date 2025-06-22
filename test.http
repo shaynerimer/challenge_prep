@@ -1,4 +1,4 @@
-### Place Order - Another Valid Request
+### Place Order - Valid Request
 POST http://localhost:3000/placeOrder
 Content-Type: application/json
 
@@ -13,4 +13,22 @@ Content-Type: application/json
 
 {
   "orderQty": 3
+}
+
+### Place Order - Invalid Request (missing orderQty)
+POST http://localhost:3000/placeOrder
+Content-Type: application/json
+
+{
+  "productId": "laptop-456"
+}
+
+
+### Place Order - Invalid Request (negative orderQty)
+POST http://localhost:3000/placeOrder
+Content-Type: application/json
+
+{
+  "productId": "laptop-456",
+  "orderQty": -1
 }
