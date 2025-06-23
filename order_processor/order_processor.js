@@ -17,6 +17,13 @@ const SERVICE_APP_PORT = process.env.APP_PORT || 3000; // Port your Node.js app 
 app.post('/placeOrder', async (req, res) => {
     const { productId, orderQty } = req.body;
 
+    console.info('fluentd', {
+        level: 'INFO',
+        message: 'Received /placeOrder request',
+        grpcTraceBin: req.headers['grpc-trace-bin'],
+        traceparent: req.headers['traceparent']
+    });
+
     try {
         const actor = createActor(orderMachine, {
             input: { productId, orderQty }
