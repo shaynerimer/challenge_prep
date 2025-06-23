@@ -11,10 +11,17 @@ spec:
     metadata:
       labels:
         app: order-processor
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "order-processor"
+        dapr.io/app-port: "3000"
+        dapr.io/config: "tracing"
+        dapr.io/log-as-json: "true"
     spec:
       containers:
         - name: order-processor
-          image: ghcr.io/shaynerimer/order_processor:latest
+          image: order-processor:latest
+          imagePullPolicy: Never
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -29,7 +36,14 @@ spec:
     metadata:
       labels:
         app: order-sender
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "order-sender"
+        dapr.io/app-port: "3000"
+        dapr.io/config: "tracing"
+        dapr.io/log-as-json: "true"
     spec:
       containers:
         - name: order-sender
-          image: ghcr.io/shaynerimer/order_sender:latest
+          image: order-sender:latest
+          imagePullPolicy: Never
