@@ -1,9 +1,16 @@
 const winston = require('winston');
-const { transition } = require('xstate');
+
+const addLogType = winston.format((info) => {
+    info.logType = 'Application';
+    return info;
+});
 
 const logger = winston.createLogger({
     level: 'info',
-    format: winston.format.json(),
+    format: winston.format.combine(
+        addLogType(),
+        winston.format.json()
+    ),
     transports: [new winston.transports.Console()]
 });
 
