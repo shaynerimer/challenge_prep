@@ -1,6 +1,8 @@
 const express = require('express');
-const { orderMachine } = require('./orderMachine');
 const { createActor } = require('xstate');
+
+const { orderMachine } = require('./orderMachine');
+const { logger } = require('./logger');
 
 
 const app = express();
@@ -17,13 +19,6 @@ const SERVICE_APP_PORT = process.env.APP_PORT || 3000; // Port your Node.js app 
 app.post('/placeOrder', async (req, res) => {
     const { productId, orderQty } = req.body;
 
-    console.info('fluentd', {
-        level: 'INFO',
-        message: 'Received /placeOrder request',
-        grpcTraceBin: req.headers['grpc-trace-bin'],
-        traceparent: req.headers['traceparent']
-    });
-
     try {
         const actor = createActor(orderMachine, {
             input: { productId, orderQty }
@@ -36,6 +31,15 @@ app.post('/placeOrder', async (req, res) => {
 
         const state = actor.getSnapshot();
         if (state.value === 'completed') {
+            logger.info({
+                message: 'Order Processed',
+                orderDetails: {
+                    productId: productId,
+                    orderQty: orderQty
+                },
+                confirmationNumber: state.context.confirmationNumber,
+                trace: req.headers['traceparent']
+            })
             return res.status(200).json({
                 confirmationNumber: state.context.confirmationNumber
             });
