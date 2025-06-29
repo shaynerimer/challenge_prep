@@ -1,19 +1,20 @@
 'use client'
-import { UserCircleIcon, Cog8ToothIcon, ArrowRightStartOnRectangleIcon, c, SunIcon, MoonIcon, LifebuoyIcon, ChevronDownIcon} from '@heroicons/react/24/outline';
+import { UserCircleIcon, Cog8ToothIcon, ArrowRightStartOnRectangleIcon, ChevronDownIcon} from '@heroicons/react/24/outline';
 import Logo from '@/assets/logo.svg'
 import avatar_placeholder from '@/app/favicon.ico'
 import Link from 'next/link'
 import Image from 'next/image'
+import SidebarDrawer from './sidebarDrawer.js'
 
 export default function AppLayout({ children }) {
 
     return (
     <html lang="en">
-    <body className='flex min-h-dvh bg-gradient-to-br from-base-100 via-base-200 to-base-300'>
+    <body className='flex min-h-dvh bg-base-200'>
     <div className="flex flex-col flex-1">
 
           {/* Navigation Bar */}
-          <div className="navbar bg-gradient-to-br from-base-100 via-base-200/20 to-base-300/20 py-4 pr-10">
+          <div className="navbar z-3 bg-base-200 h-16 py-4 pr-10 shadow-lg">
             <div className="flex-1">
               <Link href='/' className="btn btn-ghost normal-case text-xl no-animation hover:bg-transparent active:bg-transparent">
                 <Image src={Logo} alt="Brand Logo" className="h-10 w-auto" />
@@ -39,7 +40,7 @@ export default function AppLayout({ children }) {
             <div className="flex-none ml-5">
               <div className="dropdown dropdown-end">
                 <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
-                  <div className="size-[45px] rounded-full border border-black shadow-sm shadow-slate-800 hover:scale-110">
+                  <div className="size-[45px] rounded-full hover:scale-110">
                     <Image src={avatar_placeholder} alt="User Avatar" width="45" height="45" />
                   </div>
                 </label>
@@ -48,24 +49,35 @@ export default function AppLayout({ children }) {
                   <li className='group'><a><Cog8ToothIcon className="h-5 w-5 mr-2 group-hover:scale-110" />Settings</a></li>
                   <li className='group'>
                     <button onClick={() => {}}>
-                    <ArrowRightStartOnRectangleIcon className="h-5 w-5 mr-2 group-hover:scale-110"/>
-                    Logout
+                      <ArrowRightStartOnRectangleIcon className="h-5 w-5 mr-2 group-hover:scale-110"/>
+                      Logout
                     </button>
                   </li>
                 </ul>
               </div>
             </div>
-          </div>
+            </div>
 
-          {/* Routed Pages */}
-          <div className="grow">
-            { children }
+           <div className='flex flex-row h-full'>
+            {/* Sidebar Drawer */}
+            <SidebarDrawer />
+
+            {/* Main Content Area */}
+            <div className="z-1 flex flex-col w-full">
+              {/* Main App Router Content */  }
+              <div className="grow">
+                { children }
+              </div>
+
+              {/* Footer */}
+              <div className="footer h-12 bg-transparent p-4 flex flex-row justify-center">
+                <p className=''>&copy; 2025 Shayne Rimer</p>
+              </div>
+
+            </div>
           </div>
           
-          {/* Footer */}
-          <div className="footer h-12 bg-transparent p-4 flex flex-row justify-center">
-            <p className=''>&copy; 2025 Shayne Rimer</p>
-          </div>
+          
 
         </div>
 
