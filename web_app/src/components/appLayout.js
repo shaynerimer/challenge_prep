@@ -1,22 +1,28 @@
 'use client'
-import { UserCircleIcon, Cog8ToothIcon, ArrowRightStartOnRectangleIcon, ChevronDownIcon} from '@heroicons/react/24/outline';
+import { UserCircleIcon, Cog8ToothIcon, ArrowRightStartOnRectangleIcon, ChevronDownIcon, SunIcon, MoonIcon, LifebuoyIcon, BoltIcon} from '@heroicons/react/24/outline';
 import Logo from '@/assets/logo.svg'
 import avatar_placeholder from '@/app/favicon.ico'
 import Link from 'next/link'
 import Image from 'next/image'
 import SidebarDrawer from './sidebarDrawer.js'
 
+import { useAppSelector, useAppDispatch, useAppStore } from "@/lib/hooks";
+import { setTheme } from "@/lib/features/theme/themeSlice";
+
 export default function AppLayout({ children }) {
 
+    const dispatch = useAppDispatch()
+    const theme = useAppSelector((state) => state.theme.value);
+
     return (
-    <html lang="en">
+    <html lang="en" data-theme={theme}>
     <body className='flex min-h-dvh bg-base-200'>
     <div className="flex flex-col flex-1">
 
           {/* Navigation Bar */}
           <div className="navbar z-3 bg-base-200 h-16 py-4 pr-10 shadow-lg">
             <div className="flex-1">
-              <Link href='/' className="btn btn-ghost normal-case text-xl no-animation hover:bg-transparent active:bg-transparent">
+              <Link href='/' className="btn btn-ghost normal-case text-xl no-animation hover:border-transparent hover:shadow-none hover:bg-transparent active:bg-transparent">
                 <Image src={Logo} alt="Brand Logo" className="h-10 w-auto" />
               </Link>
             </div>
@@ -27,11 +33,12 @@ export default function AppLayout({ children }) {
                 {/* Theme Selection */}
                 <div className="dropdown dropdown-end">
                     <label tabIndex={0} className="btn btn-ghost">Theme<ChevronDownIcon className="h-3 w-3 ml-1" /></label>
-                    {/* <ul tabIndex={0} className="mt-3 p-1 shadow menu menu-compact dropdown-content bg-base-100 rounded-box">
-                        <li className='group'><a className={theme === 'light' ? 'text-primary' : ''} onClick={() => {}}><SunIcon className="h-5 w-5 mr-2 group-hover:scale-110" />Light</a></li>
-                        <li className='group'><a className={theme === 'dark' ? 'text-primary' : ''} onClick={() => {}}><MoonIcon className="h-5 w-5 mr-2 group-hover:scale-110" />Dark</a></li>
-                        <li className='group'><a className={theme === 'ocean' ? 'text-primary' : ''} onClick={() => {}}><LifebuoyIcon className="h-5 w-5 mr-2 group-hover:scale-110" />Ocean</a></li>
-                    </ul> */}
+                    <ul tabIndex={0} className="mt-3 p-1 shadow menu menu-compact dropdown-content bg-base-100 rounded-box">
+                        <li className='group'><a className={theme === 'light' ? 'text-primary' : ''} onClick={() => dispatch(setTheme('light'))}><SunIcon className="h-5 w-5 mr-2 group-hover:scale-110" />Light</a></li>
+                        <li className='group'><a className={theme === 'dark' ? 'text-primary' : ''} onClick={() => dispatch(setTheme('dark'))}><MoonIcon className="h-5 w-5 mr-2 group-hover:scale-110" />Dark</a></li>
+                        <li className='group'><a className={theme === 'ocean' ? 'text-primary' : ''} onClick={() => dispatch(setTheme('ocean'))}><LifebuoyIcon className="h-5 w-5 mr-2 group-hover:scale-110" />Ocean</a></li>
+                        <li className='group'><a className={theme === 'coffee' ? 'text-primary' : ''} onClick={() => dispatch(setTheme('coffee'))}><BoltIcon className="h-5 w-5 mr-2 group-hover:scale-110" />Coffee</a></li>
+                    </ul>
                 </div>
               </ul>
             </div>
