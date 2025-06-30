@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@dapr/dapr": "^3.5.2",
     "@heroicons/react": "^2.2.0",
     "@reduxjs/toolkit": "^2.8.2",
     "daisyui": "^5.0.43",
