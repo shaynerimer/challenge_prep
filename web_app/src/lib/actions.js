@@ -6,7 +6,6 @@ const DAPR_HTTP_PORT = process.env.DAPR_HTTP_PORT || "3500";
 
 export async function orderProduct(prevState, formData) {
     const client = new DaprClient(DAPR_HOST, DAPR_HTTP_PORT, CommunicationProtocolEnum.HTTP);
-    console.log(formData)
 
     // Format Payload
     const payload = {
@@ -15,6 +14,18 @@ export async function orderProduct(prevState, formData) {
     };
 
     // Invoke Service
-    const response = await client.invoker.invoke("order-processor", "placeOrder", HttpMethod.POST, payload);
-    return response;
+    try {
+        const response = await client.invoker.invoke("order-processor", "placeOrder", HttpMethod.POST, payload);
+        return {
+            status: 'success',
+            confirmationNumber: response.confirmationNumber,
+            message: 'Success!  Order Placed'
+        }
+    } catch (error) {
+        const error_msg = 'Order Error: ' + JSON.parse(JSON.parse(error.message).error_msg).error;
+        return {
+            status: 'error',
+            message: error_msg
+        }
+    }
 }

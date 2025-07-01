@@ -67,18 +67,17 @@ export default function AppPage() {
 
             </div>
 
-{/* NOTE TO SELF: START HERE FIGURING OUT HOW TO HANDLE SUCCESS AND ERROR AFTER SUBMISSION */}
-             <Alert variant='success' TTL={3}>
+            {!isPending && state.status ==='success' && <Alert variant='success' TTL={3}>
                 <CheckCircleIcon width={30}/>
-                Said Hello
+                {state.message}
             </Alert>
+            }
             
             {!isPending && state.status ==='error' && <Alert variant='error' TTL={3}>
                 <XCircleIcon width={30}/>
-                Service Unreachable
+                {state.message}
             </Alert>
             }
-            <p>{JSON.stringify(state.message)}</p>
         </div>
     )
 }
