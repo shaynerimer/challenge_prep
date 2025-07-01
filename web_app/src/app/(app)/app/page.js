@@ -3,6 +3,10 @@ import { useActionState } from 'react';
 import { orderProduct } from '@/lib/actions'
 import { Alert } from '@/components/alert';
 
+import { SWRConfig } from 'swr';
+import useSWR from 'swr';
+import { client } from '@/lib/graphqlClient';
+
 import { CheckCircleIcon, XCircleIcon} from '@heroicons/react/24/outline';
 
 export default function AppPage() {
@@ -10,11 +14,28 @@ export default function AppPage() {
     const handleSubmit = async (prevState, formData) => {
         // Call orderProduct action
         const res = await orderProduct(prevState, formData)
+        // Need an error message returned here if the service is unreachable
         return res
     }
     const [state, orderProductAction, isPending] = useActionState(handleSubmit, {});
 
+    const fetcher = (query, variables) => client.request(query, variables);
+    const testQuery = `
+        query {
+            feed {
+                id,
+                description,
+                url
+            }
+        }`
+        const { data, error } = useSWR(testQuery, fetcher);
+
+        if (data && !error) {
+            console.log('GraphQL data loaded:', data);
+        }
+
     return (
+        <SWRConfig value={{ fetcher }}>
         <div className='bg-transparent h-full w-full flex flex-col justify-center items-center'>
             <h1 className='mb-10 text-4xl font-bold'>Products</h1>
             <div className="flex gap-8">
@@ -78,6 +99,15 @@ export default function AppPage() {
                 {state.message}
             </Alert>
             }
+
+            {data && data.feed && data?.feed?.length > 0 ? (
+                data.feed.map(item => (
+                    <p key={item.id}>{item.description && item.description.formatted ? item.description.formatted : item.description}</p>
+                ))
+            ) : (
+                <p>No feed data available.</p>
+            )}
         </div>
+        </SWRConfig>
     )
 }
