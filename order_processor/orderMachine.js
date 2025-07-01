@@ -1,5 +1,6 @@
 const { assign, setup, fromCallback } = require('xstate');
 const { v4: uuidv4 } = require('uuid');
+const { DaprClient, HttpMethod, CommunicationProtocolEnum } = require("@dapr/dapr");
 
 
 /* ---- Begin State Actor Implementations  ---- */
@@ -30,6 +31,44 @@ const validateOrder = fromCallback(({ sendBack, input: { productId, orderQty }})
     }
 });
 
+const persistOrder = fromCallback(async ({ sendBack, input: { productId, orderQty, confirmationNumber }}) => {
+   const DAPR_HOST = process.env.DAPR_HOST || "http://localhost";
+   const DAPR_HTTP_PORT = process.env.DAPR_HTTP_PORT || "3500";
+
+   const client = new DaprClient(DAPR_HOST, DAPR_HTTP_PORT, CommunicationProtocolEnum.HTTP);
+    const bindingName = 'graphql';
+    const operation = 'mutation';
+    const metadata = {
+        mutation: `
+            mutation CreateOrder($productId: String!, $confirmationNumber: String!) {
+                createOrder(
+                    productId: $productId
+                    orderQty: ${parseInt(orderQty)}
+                    confirmationNumber: $confirmationNumber
+                ) {
+                    id
+                    productId
+                    orderQty
+                    confirmationNumber
+                    status
+                    createdAt
+                }
+            }
+        `,
+        'variable:productId': productId,
+        // 'variable:orderQty': orderQty,
+        'variable:confirmationNumber': confirmationNumber,
+    }
+    
+    try {
+        await client.binding.send(bindingName, operation, {}, metadata)
+        sendBack({ type: 'done', data: {  } });
+    } catch {(error) => {
+       console.error(`Error persisting order: ${error.message}`);
+       sendBack({ type: 'error', data: { error: 'Unable to save order.' } });
+   }};
+});
+
 /* ---- End State Actor Implementations  ---- */
 
 
@@ -49,7 +88,8 @@ const validateOrder = fromCallback(({ sendBack, input: { productId, orderQty }})
  */
 const orderMachine = setup({
   actors: {
-    validateOrder
+    validateOrder,
+    persistOrder
   },
 }).createMachine({
     context: ({ input }) => ({
@@ -92,7 +132,21 @@ const orderMachine = setup({
                     return confirmation;
                 }
             }),
-            always: 'completed'
+            always: 'persisting'
+        },
+        persisting: {
+            invoke: {
+                src: 'persistOrder',
+                input: ({ context: { productId, orderQty, confirmationNumber } }) => ({ productId, orderQty, confirmationNumber }),
+            },
+            on: {
+                done: {
+                    target: 'completed',
+                },
+                error: {
+                    target: 'failed',
+                }
+            }
         },
         completed: {
             type: 'final'

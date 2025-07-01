@@ -21,15 +21,15 @@ export default function AppPage() {
 
     // Use SWR to interact with Dapr binding to fetch GraphQL data
     const fetcher = (query, variables) => invokeQuery(query, variables);
-    const testQuery = `
-        query {
-            feed {
-                id,
-                description,
-                url
-            }
-        }`
-        const { data, error } = useSWR(testQuery, fetcher);
+    // const testQuery = `
+    //     query {
+    //         feed {
+    //             id,
+    //             description,
+    //             url
+    //         }
+    //     }`
+    //     const { data, error } = useSWR(testQuery, fetcher);
 
     return (
         <SWRConfig value={{ fetcher }}>
@@ -76,7 +76,7 @@ export default function AppPage() {
                             <fieldset>
                                 <label htmlFor="qty" className="mr-2">Qty:</label>
                                 <input id="qty" name='qty' type="number" min="1" defaultValue="1" className="input input-primary w-16" />
-                                {/* <input id="productId" name='productId' type='hidden' value="headphones-abc123" readOnly /> */}
+                                <input id="productId" name='productId' type='hidden' value="headphones-abc123" readOnly />
                                 <button type='submit' className="btn btn-primary ml-5 w-20" disabled={isPending}>{isPending ? <span className='loading loading-spinner'></span> : 'Order'}</button>
                             </fieldset>
                         </form>
@@ -97,13 +97,6 @@ export default function AppPage() {
             </Alert>
             }
 
-            {data && data.feed && data?.feed?.length > 0 ? (
-                data.feed.map(item => (
-                    <p key={item.id}>{item.description && item.description.formatted ? item.description.formatted : item.description}</p>
-                ))
-            ) : (
-                <p>No feed data available.</p>
-            )}
         </div>
         </SWRConfig>
     )

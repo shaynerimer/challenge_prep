@@ -1,0 +1,27 @@
+type Query {
+  info: String!
+  orders: [Order!]!
+  orderById(id: ID!): Order
+  orderByConfirmation(confirmationNumber: String!): Order
+}
+
+type Mutation {
+  createOrder(productId: String!, orderQty: Int!, confirmationNumber: String!): Order!
+  updateOrder(id: ID!, productId: String, orderQty: Int, confirmationNumber: String, status: OrderStatus): Order
+  deleteOrder(id: ID!): Order
+}
+
+type Order {
+  id: ID!
+  productId: String!
+  orderQty: Int!
+  confirmationNumber: String
+  status: OrderStatus!
+  createdAt: String!
+}
+
+enum OrderStatus {
+  PROCESSING
+  SHIPPING
+  DELIVERED
+}

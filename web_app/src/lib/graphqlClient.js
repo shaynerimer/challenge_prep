@@ -11,8 +11,6 @@ export async function invokeQuery(query, variables) {
     const metadata = {
         query: query
     }
-
-    console.log(query)
     
     try {
         const response = await client.binding.send(bindingName, operation, {}, metadata);

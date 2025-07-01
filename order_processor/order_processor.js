@@ -1,5 +1,5 @@
 const express = require('express');
-const { createActor } = require('xstate');
+const { createActor, waitFor } = require('xstate');
 
 const { orderMachine } = require('./orderMachine');
 const { logger } = require('./logger');
@@ -21,34 +21,33 @@ app.post('/placeOrder', async (req, res) => {
 
     try {
         const actor = createActor(orderMachine, {
-            input: { productId, orderQty }
+            input: { productId, orderQty: parseInt(orderQty) }
         });
         actor.start();
         actor.send({ type: 'VALIDATE' });
 
         // Wait for the actor to reach a final state
-        await actor.getSnapshot();
+        const finalState = await waitFor(actor, (state) => {
+            return state.value === 'completed' || state.value === 'failed';
+        });
 
-        const state = actor.getSnapshot();
-        if (state.value === 'completed') {
+        if (finalState.value === 'completed') {
             logger.info({
                 message: 'Order Processed',
                 orderDetails: {
                     productId: productId,
                     orderQty: orderQty
                 },
-                confirmationNumber: state.context.confirmationNumber,
+                confirmationNumber: finalState.context.confirmationNumber,
                 trace: req.headers['traceparent']
-            })
+            });
             return res.status(200).json({
-                confirmationNumber: state.context.confirmationNumber
+                confirmationNumber: finalState.context.confirmationNumber
             });
-        } else if (state.value === 'failed') {
+        } else if (finalState.value === 'failed') {
             return res.status(500).json({
-                error: state.context.errorMessage || 'Order processing failed'
+                error: finalState.context.errorMessage || 'Order processing failed'
             });
-        } else {
-            throw new Error('Unexpected state: ' + state.value);
         }
     } catch (err) {
         return res.status(500).json({ error: 'Internal server error' });
@@ -58,5 +57,5 @@ app.post('/placeOrder', async (req, res) => {
 
 // Start listening for incoming requests
 app.listen(SERVICE_APP_PORT, () => {
-  console.log(`Order Processing Service listening on port ${SERVICE_APP_PORT}`);
+  logger.info({ message: `Order Processing Service listening on port ${SERVICE_APP_PORT}` });
 });
