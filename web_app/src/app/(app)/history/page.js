@@ -1,4 +1,8 @@
 'use client'
+// ###############################
+// ####### NEEDS REVIEW ##########
+// ###############################
+
 import { useState } from 'react';
 
 import useSWR from 'swr';
@@ -8,6 +12,8 @@ import { invokeQuery } from '@/lib/graphqlClient';
 export default function HelpPage() {
     const [selectedOrders, setSelectedOrders] = useState(new Set());
     const [selectAll, setSelectAll] = useState(false);
+    const [sortField, setSortField] = useState('createdAt');
+    const [sortDirection, setSortDirection] = useState('desc'); // 'asc', 'desc', or null
 
     // Use SWR to interact with Dapr binding to fetch GraphQL data
     const fetcher = (query, variables) => invokeQuery(query, variables);
@@ -24,7 +30,77 @@ export default function HelpPage() {
     const { data, error } = useSWR(orderQuery, fetcher);
     
     // Extract orders from GraphQL response
-    const orders = data?.orders || [];
+    const rawOrders = data?.orders || [];
+    
+    // Sort orders based on current sort settings
+    const orders = [...rawOrders].sort((a, b) => {
+        if (!sortField || !sortDirection) return 0;
+        
+        let aValue = a[sortField];
+        let bValue = b[sortField];
+        
+        // Handle date fields
+        if (sortField === 'createdAt') {
+            aValue = parseInt(aValue);
+            bValue = parseInt(bValue);
+        }
+        
+        // Handle numeric fields
+        if (sortField === 'orderQty') {
+            aValue = parseInt(aValue);
+            bValue = parseInt(bValue);
+        }
+        
+        // Handle string fields
+        if (typeof aValue === 'string' && typeof bValue === 'string') {
+            aValue = aValue.toLowerCase();
+            bValue = bValue.toLowerCase();
+        }
+        
+        if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+        if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+        return 0;
+    });
+
+    const handleSort = (field) => {
+        if (sortField === field) {
+            // Cycle through: asc -> desc -> none
+            if (sortDirection === 'asc') {
+                setSortDirection('desc');
+            } else if (sortDirection === 'desc') {
+                setSortDirection(null);
+                setSortField(null);
+            }
+        } else {
+            // New field, start with ascending
+            setSortField(field);
+            setSortDirection('asc');
+        }
+    };
+
+    const getSortIcon = (field) => {
+        if (sortField !== field) {
+            return (
+                <span className="inline-flex flex-col opacity-50">
+                    <span className="text-xs">▲</span>
+                    <span className="text-xs -mt-1">▼</span>
+                </span>
+            );
+        }
+        
+        if (sortDirection === 'asc') {
+            return <span className="text-xs">▲</span>;
+        } else if (sortDirection === 'desc') {
+            return <span className="text-xs">▼</span>;
+        }
+        
+        return (
+            <span className="inline-flex flex-col opacity-50">
+                <span className="text-xs">▲</span>
+                <span className="text-xs -mt-1">▼</span>
+            </span>
+        );
+    };
 
     const handleSelectAll = () => {
         if (selectAll) {
@@ -86,10 +162,42 @@ export default function HelpPage() {
                                         onChange={handleSelectAll}
                                     />
                                 </th>
-                                <th className="border-r border-gray-300 py-2 px-3 text-sm">Product</th>
-                                <th className="border-r border-gray-300 py-2 px-3 text-sm">Qty.</th>
-                                <th className="border-r border-gray-300 py-2 px-3 text-sm">Confirmation Number</th>
-                                <th className="py-2 px-3 text-sm">Order Date</th>
+                                <th className="border-r border-gray-300 py-2 px-3 text-sm">
+                                    <button 
+                                        className="flex items-center justify-between w-full hover:bg-gray-200 rounded px-1 py-1 transition-colors"
+                                        onClick={() => handleSort('productId')}
+                                    >
+                                        <span>Product</span>
+                                        {getSortIcon('productId')}
+                                    </button>
+                                </th>
+                                <th className="border-r border-gray-300 py-2 px-3 text-sm">
+                                    <button 
+                                        className="flex items-center justify-between w-full hover:bg-gray-200 rounded px-1 py-1 transition-colors"
+                                        onClick={() => handleSort('orderQty')}
+                                    >
+                                        <span>Qty.</span>
+                                        {getSortIcon('orderQty')}
+                                    </button>
+                                </th>
+                                <th className="border-r border-gray-300 py-2 px-3 text-sm">
+                                    <button 
+                                        className="flex items-center justify-between w-full hover:bg-gray-200 rounded px-1 py-1 transition-colors"
+                                        onClick={() => handleSort('confirmationNumber')}
+                                    >
+                                        <span>Confirmation Number</span>
+                                        {getSortIcon('confirmationNumber')}
+                                    </button>
+                                </th>
+                                <th className="py-2 px-3 text-sm">
+                                    <button 
+                                        className="flex items-center justify-between w-full hover:bg-gray-200 rounded px-1 py-1 transition-colors"
+                                        onClick={() => handleSort('createdAt')}
+                                    >
+                                        <span>Ordered At</span>
+                                        {getSortIcon('createdAt')}
+                                    </button>
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -106,7 +214,7 @@ export default function HelpPage() {
                                     <td className="border-r border-gray-200 py-1 px-3 text-sm">{order.productId}</td>
                                     <td className="border-r border-gray-200 py-1 px-3 text-sm">{order.orderQty}</td>
                                     <td className="border-r border-gray-200 py-1 px-3 text-sm">{order.confirmationNumber}</td>
-                                    <td className="py-1 px-3 text-sm">{new Date(order.createdAt).toLocaleDateString()}</td>
+                                    <td className="py-1 px-3 text-sm">{new Date(parseInt(order.createdAt)).toLocaleString()}</td>
                                 </tr>
                             ))}
                         </tbody>
