@@ -15,14 +15,38 @@ export async function orderProduct(prevState, formData) {
 
     // Invoke Service
     try {
-        const response = await client.invoker.invoke("order-processor", "placeOrder", HttpMethod.POST, payload);
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 7000); // 7 seconds timeout
+
+        // Patch DaprClient to support abort signal (if not natively supported, wrap in Promise.race)
+        const invokePromise = client.invoker.invoke("order-processor", "placeOrder", HttpMethod.POST, payload);
+
+        const response = await Promise.race([
+            invokePromise,
+            new Promise((_, reject) =>
+                controller.signal.addEventListener('abort', () =>
+                    reject(new Error(JSON.stringify('Ordering service Unreachable' )))
+                )
+            )
+        ]);
+        clearTimeout(timeout);
         return {
             status: 'success',
             confirmationNumber: response.confirmationNumber,
             message: 'Success!  Order Placed'
         }
     } catch (error) {
-        const error_msg = 'Order Error: ' + JSON.parse(JSON.parse(error.message).error_msg).error;
+        let error_msg;
+        try {
+            const parsed = JSON.parse(error.message);
+            if (parsed && parsed.error && parsed.error.message) {
+            error_msg = 'Order Error: ' + parsed.error.message;
+            } else {
+            error_msg = 'Order Error: ' + error.message;
+            }
+        } catch {
+            error_msg = error;
+        }
         return {
             status: 'error',
             message: error_msg

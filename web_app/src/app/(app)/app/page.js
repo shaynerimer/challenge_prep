@@ -3,9 +3,8 @@ import { useActionState } from 'react';
 import { orderProduct } from '@/lib/actions'
 import { Alert } from '@/components/alert';
 
-import { SWRConfig } from 'swr';
-import useSWR from 'swr';
-import { invokeQuery } from '@/lib/graphqlClient';
+
+
 
 import { CheckCircleIcon, XCircleIcon} from '@heroicons/react/24/outline';
 
@@ -19,20 +18,8 @@ export default function AppPage() {
     }
     const [state, orderProductAction, isPending] = useActionState(handleSubmit, {});
 
-    // Use SWR to interact with Dapr binding to fetch GraphQL data
-    const fetcher = (query, variables) => invokeQuery(query, variables);
-    // const testQuery = `
-    //     query {
-    //         feed {
-    //             id,
-    //             description,
-    //             url
-    //         }
-    //     }`
-    //     const { data, error } = useSWR(testQuery, fetcher);
-
     return (
-        <SWRConfig value={{ fetcher }}>
+        
         <div className='bg-transparent h-full w-full flex flex-col justify-center items-center'>
             <h1 className='mb-10 text-4xl font-bold'>Products</h1>
             <div className="flex gap-8">
@@ -98,6 +85,5 @@ export default function AppPage() {
             }
 
         </div>
-        </SWRConfig>
     )
 }
