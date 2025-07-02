@@ -1,4 +1,8 @@
- import React, { useState } from 'react';
+'use client'
+import React, { useState, useActionState } from 'react';
+import { createJoke } from '@/lib/actions';
+import { Alert } from '@/components/alert';
+import { CheckCircleIcon, XCircleIcon} from '@heroicons/react/24/outline';
  
 export function JokeGeneratorCard() {
 
@@ -6,6 +10,7 @@ export function JokeGeneratorCard() {
     const [predictability, setPredictability] = useState(1);
     const [style, setStyle] = useState('Classic');
 
+    // Labels and definitions for slider UI and ease of use
     const cheesinessLabels = ["Subtle", "Classic Groan", "Audible Sigh", "Eye Roll"];
     const predictabilityLabels = ["Unexpected", "Familiar Setup", "Obvious"];
     const cheesinessDefinitions = [
@@ -14,16 +19,25 @@ export function JokeGeneratorCard() {
         "Unapologetically cheesy.  Interpretations are pushed to an absurd degree.  Dad's who use these jokes are truly commited to their craft.",
         "Joke's so obvious and literal that your family will skip right over groans and go straight for the eye roll.  You'll be proud of yourself for hours after a succesful delivery."
     ]
-        const predictabilityDefinitions = [
+    const predictabilityDefinitions = [
         'More likely to illicit an "Oh, I see what you did there" than a groan.',
         "These jokes follow a familiar pattern that your family has likley heard from either you or other genius dads.",
         'Your wife is likely to hold up her hand and say "Please don\'t do it" before you even finish the setup.'
     ]
 
+    // Handle submission and call server action
+    const handleSubmit = async (prevState, formData) => {
+        // Call createJoke action
+        const res = await createJoke(prevState, formData)
+        console.log('Joke Creation Response:', res);
+        return res
+    }
+    const [state, createJokeAction, isPending] = useActionState(handleSubmit, {});
+
     return (
         <div className="card w-11/12 min-w-2xl max-w-4xl mx-auto mt-8 bg-base-100 shadow-xl">
             <div className="card-body">
-                <form>
+                <form action={createJokeAction}>
                     <div className="mb-10 grid grid-cols-4 gap-10 items-center">
                         <label className="label flex flex-col items-start mr-5 col-span-2">
                             <span className="label-text text-3xl font-bold">Cheesiness</span>
@@ -99,12 +113,24 @@ export function JokeGeneratorCard() {
                         </select>
                     </div>
                     <div className="card-actions justify-center items-center mt-15 mb-5">
-                        <button type="submit" className="btn btn-primary pl-10 pr-10">
-                            Show Me Comedy Gold
+                        <button type="submit" className="btn btn-primary pl-10 pr-10" disabled={isPending}>
+                            {isPending ? <span className='loading loading-spinner'></span> : 'Show Me Comedy Gold'}
                         </button>
                     </div>
                 </form>
             </div>
+
+            {/* Submission success and error alerts */}
+            {!isPending && state.status ==='success' && <Alert variant='success' TTL={3}>
+                <CheckCircleIcon width={30}/>
+                {state.message}
+            </Alert>
+            }
+            {!isPending && state.status ==='error' && <Alert variant='error' TTL={3}>
+                <XCircleIcon width={30}/>
+                {state.message}
+            </Alert>
+            }
         </div>
     )
 
