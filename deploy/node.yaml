@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-processor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order-processor
+  template:
+    metadata:
+      labels:
+        app: order-processor
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "order-processor"
+        dapr.io/app-port: "3000"
+        dapr.io/config: "tracing"
+        dapr.io/log-as-json: "true"
+    spec:
+      containers:
+        - name: order-processor
+          image: order-processor:latest
+          imagePullPolicy: Never
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-sender
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order-sender
+  template:
+    metadata:
+      labels:
+        app: order-sender
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "order-sender"
+        dapr.io/app-port: "3000"
+        dapr.io/config: "tracing"
+        dapr.io/log-as-json: "true"
+    spec:
+      containers:
+        - name: order-sender
+          image: order-sender:latest
+          imagePullPolicy: Never

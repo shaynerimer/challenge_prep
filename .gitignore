@@ -1,6 +1,9 @@
 # Node modules
 node_modules/
 
+# Data Persistence
+data/
+
 # Logs
 logs/
 *.log
