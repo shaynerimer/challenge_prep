@@ -16,20 +16,17 @@ export default function AppPage() {
            {/* Page Title */}
            <h1 className='text-3xl font-bold mb-4'>Dad Joke Generator</h1>
 
+            {/* Main card container */}
+            {/* This card will swap between the joke generator and confirmation card UIs based on jokeNeedsConfirmation state */}
             <div className="card w-4xl h-full mx-auto mt-8 bg-base-100 shadow-xl">
-            {/* this hidden checkbox controls the state */}
-                {/* <input type="checkbox" checked={jokeNeedsConfirmation} readOnly/> */}
-
-                {/* Joke Generator UI */}
+                {/* Joke Generator card front */}
                 {!jokeNeedsConfirmation &&
                     <JokeGeneratorCard swapCard={(joke) => {
                         setJoke(joke)
                         setJokeNeedsConfirmation(true)
                     }} />
                 }
-                    
-
-                {/* Placeholder for swap-off content */}
+                {/* Confirmation card front */}
                 {jokeNeedsConfirmation &&
                     <JokeConfirmationCard joke={joke} swapCard={() => {
                         // Reset state when save is complete or user closes card

@@ -42,10 +42,16 @@ export async function invokeCreateJoke(jokeObj) {
     const bindingName = 'graphql';
     const operation = 'mutation';
 
-    const metadata = {
+    let metadata = {
         mutation: `
-            mutation createJoke {
-                createJoke(joke: ${JSON.stringify(jokeObj)}) {
+            mutation {
+                createJoke(
+                    joke: ${JSON.stringify(jokeObj.joke)},
+                    cheesiness: ${jokeObj.cheesiness},
+                    predictability: ${jokeObj.predictability},
+                    style: ${JSON.stringify(jokeObj.style)}
+                ) {
+                    id
                     joke
                     cheesiness
                     predictability

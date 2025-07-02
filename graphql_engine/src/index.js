@@ -7,83 +7,89 @@ const prisma = new PrismaClient()
 
 const resolvers = {
   Query: {
-    info: () => `API for Order Management`,
+    info: () => `API for Dad Joke Management`,
     
-    // Get all orders
-    orders: async (parent, args, context) => {
-      return context.prisma.order.findMany({
+    // Get all jokes
+    jokes: async (parent, args, context) => {
+      return context.prisma.joke.findMany({
         orderBy: { createdAt: 'desc' }
       })
     },
     
-    // Get order by ID
-    orderById: async (parent, args, context) => {
-      return context.prisma.order.findUnique({
+    // Get joke by ID
+    jokeById: async (parent, args, context) => {
+      return context.prisma.joke.findUnique({
         where: { id: parseInt(args.id) }
       })
     },
     
-    // Get order by confirmation number
-    orderByConfirmation: async (parent, args, context) => {
-      return context.prisma.order.findUnique({
-        where: { confirmationNumber: args.confirmationNumber }
+    // Get favorite jokes
+    favoriteJokes: async (parent, args, context) => {
+      return context.prisma.joke.findMany({
+        where: { favorite: true },
+        orderBy: { createdAt: 'desc' }
       })
     },
   },
   
   Mutation: {
-    // Create a new order
-    createOrder: async (parent, args, context) => {
-      const newOrder = await context.prisma.order.create({
+    // Create a new joke
+    createJoke: async (parent, args, context) => {
+      const newJoke = await context.prisma.joke.create({
         data: {
-          productId: args.productId,
-          orderQty: args.orderQty,
-          confirmationNumber: args.confirmationNumber,
-          status: args.status,
+          joke: args.joke,
+          cheesiness: args.cheesiness,
+          predictability: args.predictability,
+          style: args.style,
         },
       })
-      return newOrder
+      return newJoke
     },
     
-    // Update an existing order
-    updateOrder: async (parent, args, context) => {
+    // Update an existing joke
+    updateJoke: async (parent, args, context) => {
       const updateData = {};
       
       // Only include fields that were provided
-      if (args.productId !== undefined) updateData.productId = args.productId;
-      if (args.orderQty !== undefined) updateData.orderQty = args.orderQty;
-      if (args.confirmationNumber !== undefined) updateData.confirmationNumber = args.confirmationNumber;
-      if (args.status !== undefined) updateData.status = args.status;
+      if (args.joke !== undefined) updateData.joke = args.joke;
+      if (args.cheesiness !== undefined) updateData.cheesiness = args.cheesiness;
+      if (args.predictability !== undefined) updateData.predictability = args.predictability;
+      if (args.style !== undefined) updateData.style = args.style;
+      if (args.told !== undefined) updateData.told = args.told;
+      if (args.favorite !== undefined) updateData.favorite = args.favorite;
+      if (args.eyeRollResponse !== undefined) updateData.eyeRollResponse = args.eyeRollResponse;
+      if (args.groanResponse !== undefined) updateData.groanResponse = args.groanResponse;
+      if (args.selfLaughResponse !== undefined) updateData.selfLaughResponse = args.selfLaughResponse;
       
-      return context.prisma.order.update({
+      return context.prisma.joke.update({
         where: { id: parseInt(args.id) },
         data: updateData,
       })
     },
     
-    // Delete multiple orders
-    deleteOrders: async (parent, args, context) => {
-      const orderIds = args.ids.map(id => parseInt(id));
+    // Delete multiple jokes
+    deleteJokes: async (parent, args, context) => {
+      const jokeIds = args.ids.map(id => parseInt(id));
       
-      // First, get the orders that will be deleted (to return them)
-      const ordersToDelete = await context.prisma.order.findMany({
+      // First, get the jokes that will be deleted (to return them)
+      const jokesToDelete = await context.prisma.joke.findMany({
         where: { 
           id: { 
-            in: orderIds 
+            in: jokeIds 
           } 
         }
       });
       
-      // Delete the orders
-      await context.prisma.order.deleteMany({
+      // Delete the jokes
+      await context.prisma.joke.deleteMany({
         where: { 
           id: { 
-            in: orderIds 
+            in: jokeIds 
           } 
         }
       });
       
-      return ordersToDelete;
+      return jokesToDelete;
     },
   },
 }

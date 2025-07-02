@@ -11,13 +11,11 @@ export function JokeConfirmationCard({ joke, swapCard }) {
     const [returning, setReturning] = useState(false); // State to track if we're returning to the generator card
 
     const handleSave = async () => {
-        console.log('Saving joke:', joke);
         setSaving(true);
         setSaveState(null); // Reset save state
         
         try {
             const response = await invokeCreateJoke(joke);
-            console.log('Joke saved:', response);
             
             // Check if response indicates success
             if (response && !response.error) {
