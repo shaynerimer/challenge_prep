@@ -33,7 +33,13 @@ export function JokeGeneratorCard({ swapCard }) {
         
         // If joke generation was successful, notify parent component
         if (res.status === 'success' && swapCard) {
-            swapCard(res.joke);
+            const jokeObj = {
+                joke: res.joke,
+                cheesiness: cheesiness,
+                predictability: predictability,
+                style: style
+            }
+            swapCard(jokeObj);
         }
         
         return res
