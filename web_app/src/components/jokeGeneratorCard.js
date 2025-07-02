@@ -4,7 +4,7 @@ import { createJoke } from '@/lib/actions';
 import { Alert } from '@/components/alert';
 import { CheckCircleIcon, XCircleIcon} from '@heroicons/react/24/outline';
  
-export function JokeGeneratorCard() {
+export function JokeGeneratorCard({ swapCard }) {
 
     const [cheesiness, setCheesiness] = useState(2);
     const [predictability, setPredictability] = useState(1);
@@ -30,12 +30,18 @@ export function JokeGeneratorCard() {
         // Call createJoke action
         const res = await createJoke(prevState, formData)
         console.log('Joke Creation Response:', res);
+        
+        // If joke generation was successful, notify parent component
+        if (res.status === 'success' && swapCard) {
+            swapCard(res.joke);
+        }
+        
         return res
     }
     const [state, createJokeAction, isPending] = useActionState(handleSubmit, {});
 
     return (
-        <div className="card w-11/12 min-w-2xl max-w-4xl mx-auto mt-8 bg-base-100 shadow-xl">
+        <div>
             <div className="card-body">
                 <form action={createJokeAction}>
                     <div className="mb-10 grid grid-cols-4 gap-10 items-center">
