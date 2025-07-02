@@ -8,7 +8,7 @@ import { useState } from 'react';
 import useSWR, { mutate } from 'swr';
 import { SWRConfig } from 'swr';
 import { invokeQuery, invokeDeleteMany } from '@/lib/graphqlClient';
-import { TrashIcon } from '@heroicons/react/24/outline';
+import { TrashIcon, PencilIcon } from '@heroicons/react/24/outline';
 
 export default function HelpPage() {
     const [selectedOrders, setSelectedOrders] = useState(new Set());
@@ -46,6 +46,30 @@ export default function HelpPage() {
 
         // Revalidate the SWR cache to refresh the order list
         mutate(orderQuery)
+    }
+
+    // Function to handle deleting a single order
+    const handleDeleteSingle = async (orderId) => {
+        try {
+            await invokeDeleteMany([orderId]);
+            // Remove the deleted order from selected orders if it was selected
+            const newSelected = new Set(selectedOrders);
+            newSelected.delete(orderId);
+            setSelectedOrders(newSelected);
+            // Update selectAll state
+            setSelectAll(false);
+        } catch (error) {
+            console.error("Error deleting order:", error);
+        }
+
+        // Revalidate the SWR cache to refresh the order list
+        mutate(orderQuery)
+    }
+    
+    // Function to handle editing an order (placeholder for future implementation)
+    const handleEdit = (orderId) => {
+        // TODO: Implement edit functionality
+        console.log("Edit order:", orderId);
     }
     
     // Extract orders from GraphQL response
@@ -175,7 +199,7 @@ export default function HelpPage() {
                     Delete Selected
                 </button>
 
-                <div className="overflow-x-auto w-full max-w-3xl shadow-lg">
+                <div className="overflow-x-auto w-full max-w-4xl shadow-lg">
                     <table className="table table-zebra w-full border border-gray-300">
                         <thead className="bg-accent">
                             <tr className="border-b border-gray-300 h-10 text-accent-content">
@@ -214,7 +238,7 @@ export default function HelpPage() {
                                         {getSortIcon('confirmationNumber')}
                                     </button>
                                 </th>
-                                <th className="py-2 px-3 text-sm">
+                                <th className="border-r border-gray-300 py-2 px-3 text-sm">
                                     <button 
                                         className="flex items-center justify-between w-full hover:bg-gray-200 rounded px-1 py-1 transition-colors"
                                         onClick={() => handleSort('createdAt')}
@@ -222,6 +246,9 @@ export default function HelpPage() {
                                         <span>Ordered At</span>
                                         {getSortIcon('createdAt')}
                                     </button>
+                                </th>
+                                <th className="py-2 px-3 text-sm">
+                                    <span>Actions</span>
                                 </th>
                             </tr>
                         </thead>
@@ -239,7 +266,25 @@ export default function HelpPage() {
                                     <td className="border-r border-gray-200 py-1 px-3 text-sm">{order.productId}</td>
                                     <td className="border-r border-gray-200 py-1 px-3 text-sm">{order.orderQty}</td>
                                     <td className="border-r border-gray-200 py-1 px-3 text-sm">{order.confirmationNumber}</td>
-                                    <td className="py-1 px-3 text-sm">{new Date(parseInt(order.createdAt)).toLocaleString()}</td>
+                                    <td className="border-r border-gray-200 py-1 px-3 text-sm">{new Date(parseInt(order.createdAt)).toLocaleString()}</td>
+                                    <td className="py-1 px-3">
+                                        <div className="flex gap-2">
+                                            <button 
+                                                className="btn btn-sm btn-ghost p-1 hover:bg-blue-100"
+                                                onClick={() => handleEdit(order.id)}
+                                                title="Edit order"
+                                            >
+                                                <PencilIcon className="h-4 w-4 text-blue-600" />
+                                            </button>
+                                            <button 
+                                                className="btn btn-sm btn-ghost p-1 hover:bg-red-100"
+                                                onClick={() => handleDeleteSingle(order.id)}
+                                                title="Delete order"
+                                            >
+                                                <TrashIcon className="h-4 w-4 text-red-600" />
+                                            </button>
+                                        </div>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
