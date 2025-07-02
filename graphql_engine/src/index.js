@@ -61,11 +61,29 @@ const resolvers = {
       })
     },
     
-    // Delete an order
-    deleteOrder: async (parent, args, context) => {
-      return context.prisma.order.delete({
-        where: { id: parseInt(args.id) }
-      })
+    // Delete multiple orders
+    deleteOrders: async (parent, args, context) => {
+      const orderIds = args.ids.map(id => parseInt(id));
+      
+      // First, get the orders that will be deleted (to return them)
+      const ordersToDelete = await context.prisma.order.findMany({
+        where: { 
+          id: { 
+            in: orderIds 
+          } 
+        }
+      });
+      
+      // Delete the orders
+      await context.prisma.order.deleteMany({
+        where: { 
+          id: { 
+            in: orderIds 
+          } 
+        }
+      });
+      
+      return ordersToDelete;
     },
   },
 }

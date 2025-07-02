@@ -8,7 +8,7 @@ type Query {
 type Mutation {
   createOrder(productId: String!, orderQty: Int!, confirmationNumber: String!): Order!
   updateOrder(id: ID!, productId: String, orderQty: Int, confirmationNumber: String, status: OrderStatus): Order
-  deleteOrder(id: ID!): Order
+  deleteOrders(ids: [ID!]!): [Order!]!
 }
 
 type Order {

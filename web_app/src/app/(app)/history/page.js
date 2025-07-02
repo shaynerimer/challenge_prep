@@ -5,15 +5,16 @@
 
 import { useState } from 'react';
 
-import useSWR from 'swr';
+import useSWR, { mutate } from 'swr';
 import { SWRConfig } from 'swr';
-import { invokeQuery } from '@/lib/graphqlClient';
+import { invokeQuery, invokeDeleteMany } from '@/lib/graphqlClient';
+import { TrashIcon } from '@heroicons/react/24/outline';
 
 export default function HelpPage() {
     const [selectedOrders, setSelectedOrders] = useState(new Set());
     const [selectAll, setSelectAll] = useState(false);
     const [sortField, setSortField] = useState('createdAt');
-    const [sortDirection, setSortDirection] = useState('desc'); // 'asc', 'desc', or null
+    const [sortDirection, setSortDirection] = useState('desc');
 
     // Use SWR to interact with Dapr binding to fetch GraphQL data
     const fetcher = (query, variables) => invokeQuery(query, variables);
@@ -28,6 +29,24 @@ export default function HelpPage() {
             }
         }`
     const { data, error } = useSWR(orderQuery, fetcher);
+
+    // Function to handle deleting selected orders when "delete selected" button is clicked
+    const handleDeleteSelected = async () => {
+        if (selectedOrders.size === 0) return;
+
+        const orderIds = Array.from(selectedOrders);   
+        try {
+            await invokeDeleteMany(orderIds);
+            // Clear selected orders on success
+            setSelectedOrders(new Set());
+            setSelectAll(false);
+        } catch (error) {
+            console.error("Error deleting orders:", error);
+        }
+
+        // Revalidate the SWR cache to refresh the order list
+        mutate(orderQuery)
+    }
     
     // Extract orders from GraphQL response
     const rawOrders = data?.orders || [];
@@ -150,6 +169,12 @@ export default function HelpPage() {
         <SWRConfig value={{ fetcher }}>
             <div className='bg-transparent h-full w-full flex flex-col p-6'>
                 <h1 className='mb-10 text-4xl font-bold text-left'>Order History</h1>
+
+                <button className="btn btn-error mb-4 w-45 text-error-content" disabled={selectedOrders.size === 0} onClick={handleDeleteSelected}>
+                    <TrashIcon className="h-5 w-5 mr-2" />
+                    Delete Selected
+                </button>
+
                 <div className="overflow-x-auto w-full max-w-3xl shadow-lg">
                     <table className="table table-zebra w-full border border-gray-300">
                         <thead className="bg-accent">
