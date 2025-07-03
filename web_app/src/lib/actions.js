@@ -17,21 +17,9 @@ export async function createJoke(prevState, formData) {
     // Invoke Service
     try {
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 5000); // 7 seconds timeout
+        const timeout = setTimeout(() => controller.abort(), 35000); // 35 seconds timeout
 
-        // Patch DaprClient to support abort signal (if not natively supported, wrap in Promise.race)
-        // const invokePromise = client.invoker.invoke("joke-generator", "createJoke", HttpMethod.POST, payload);
-        const simJokes = [
-            "Why don't scientists trust atoms? Because they make up everything!",
-            "I used to be a baker, but I couldn't make enough dough.",
-            "What do you call a sad strawberry? A blueberry.",
-            "I'm reading a book on anti-gravity. It's impossible to put down!",
-            "Did you hear about the restaurant on the moon? Great food, no atmosphere."
-        ]
-        const invokePromise = new Promise((resolve) => {
-            const joke = simJokes[Math.floor(Math.random() * simJokes.length)];
-            resolve(`{"joke": "${joke}"}`); // Simulate a successful response
-        })
+        const invokePromise = client.invoker.invoke("joke-generator", "generateJoke", HttpMethod.POST, payload);
 
         const response = await Promise.race([
             invokePromise,
@@ -42,9 +30,10 @@ export async function createJoke(prevState, formData) {
             )
         ]);
         clearTimeout(timeout);
+        console.log('Joke Creation Response:', response);
         return {
             status: 'success',
-            joke: JSON.parse(response).joke,
+            joke: response.joke,
             message: 'Success!  Joke Created'
         }
     } catch (error) {

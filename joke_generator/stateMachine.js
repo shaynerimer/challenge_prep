@@ -1,6 +1,5 @@
 const { assign, setup, fromCallback } = require('xstate');
-const { v4: uuidv4 } = require('uuid');
-const { DaprClient, HttpMethod, CommunicationProtocolEnum } = require("@dapr/dapr");
+const generateJoke = require('./generator/joke_generator')
 
 
 /* ---- Begin State Actor Implementations  ---- */
@@ -21,11 +20,11 @@ const validateParams = fromCallback(({ sendBack, input: { cheesiness, predictabi
     }
 });
 
-const generateJoke = fromCallback(async ({ sendBack, input: { cheesiness, predictability, style }}) => {
+const getJoke = fromCallback(async ({ sendBack, input: { cheesiness, predictability, style }}) => {
    
     try {
-        // Implement joke generation here
-        sendBack({ type: 'done', data: { joke: 'This is a funny joke!' } });
+        const joke = await generateJoke(cheesiness, predictability, style);
+        sendBack({ type: 'done', data: { joke } });
     } catch (error) {
        sendBack({ type: 'error', data: { error: 'Unable to generate joke.', error_msg: error.message } });
    }
@@ -51,7 +50,7 @@ const generateJoke = fromCallback(async ({ sendBack, input: { cheesiness, predic
 const jokeMachine = setup({
   actors: {
     validateParams,
-    generateJoke
+    getJoke
   },
 }).createMachine({
     context: ({ input }) => ({
@@ -89,7 +88,7 @@ const jokeMachine = setup({
         },
         generating: {
             invoke: {
-                src: 'generateJoke',
+                src: 'getJoke',
                 input: ({ context: { cheesiness, predictability, style } }) => ({ cheesiness, predictability, style }),
             },
             on: {
