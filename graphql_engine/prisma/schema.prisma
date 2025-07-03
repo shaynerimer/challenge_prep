@@ -1,17 +1,22 @@
 datasource db {
   provider = "sqlite"
-  url      = "file:../../data/order_database.db"
+  url      = "file:../../data/joke_database.db"
 }
 
 generator client {
   provider = "prisma-client-js"
 }
 
-model Order {
-  id                 Int      @id @default(autoincrement())
-  productId          String
-  orderQty           Int
-  confirmationNumber String   @unique
-  status             String   @default("PROCESSING")
-  createdAt          DateTime @default(now())
+model Joke {
+  id                   Int      @id @default(autoincrement())
+  joke                 String
+  cheesiness           Int
+  predictability       Int
+  style                String
+  told                 Boolean  @default(false)
+  favorite             Boolean  @default(false)
+  eyeRollResponse      Int      @default(0)
+  groanResponse        Int      @default(0)
+  selfLaughResponse    Int      @default(0)
+  createdAt            DateTime @default(now())
 }

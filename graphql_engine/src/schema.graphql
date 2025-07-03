@@ -1,27 +1,26 @@
 type Query {
   info: String!
-  orders: [Order!]!
-  orderById(id: ID!): Order
-  orderByConfirmation(confirmationNumber: String!): Order
+  jokes: [Joke!]!
+  jokeById(id: ID!): Joke
+  favoriteJokes: [Joke!]!
 }
 
 type Mutation {
-  createOrder(productId: String!, orderQty: Int!, confirmationNumber: String!): Order!
-  updateOrder(id: ID!, productId: String, orderQty: Int, confirmationNumber: String, status: OrderStatus): Order
-  deleteOrders(ids: [ID!]!): [Order!]!
+  createJoke(joke: String!, cheesiness: Int!, predictability: Int!, style: String!): Joke!
+  updateJoke(id: ID!, joke: String, cheesiness: Int, predictability: Int, style: String, told: Boolean, favorite: Boolean, eyeRollResponse: Int, groanResponse: Int, selfLaughResponse: Int): Joke
+  deleteJokes(ids: [ID!]!): [Joke!]!
 }
 
-type Order {
+type Joke {
   id: ID!
-  productId: String!
-  orderQty: Int!
-  confirmationNumber: String
-  status: OrderStatus!
+  joke: String!
+  cheesiness: Int!
+  predictability: Int!
+  style: String!
+  told: Boolean!
+  favorite: Boolean!
+  eyeRollResponse: Int!
+  groanResponse: Int!
+  selfLaughResponse: Int!
   createdAt: String!
-}
-
-enum OrderStatus {
-  PROCESSING
-  SHIPPING
-  DELIVERED
 }
