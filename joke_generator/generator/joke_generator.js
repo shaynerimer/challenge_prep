@@ -2,7 +2,7 @@ const { ChatGoogleGenerativeAI } = require('@langchain/google-genai');
 const { ChatPromptTemplate } = require('@langchain/core/prompts');
 const { systemPrompt, cheesinessDefinitions, predictabilityDefinitions, styleDefinitions } = require('./systemPrompt.js');
 
-const SIMULATE_AI = process.env.SIMULATE_AI === 1;
+const SIMULATE_AI = process.env.SIMULATE_AI == 1;
 
 const generateJoke = async (cheesiness, predictability, style) => {
     if (SIMULATE_AI) {
