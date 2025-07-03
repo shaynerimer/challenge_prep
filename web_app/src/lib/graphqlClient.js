@@ -15,12 +15,28 @@ function withTimeout(promise, timeoutMs) {
     ]);
 }
 
-export async function invokeQuery(query, variables) {
+export async function invokeQueryAll() {
     const client = new DaprClient(DAPR_HOST, DAPR_HTTP_PORT, CommunicationProtocolEnum.HTTP);
     const bindingName = 'graphql';
     const operation = 'query';
     const metadata = {
-        query: query
+        query: `
+        query {
+            jokes {
+                id
+                joke
+                cheesiness
+                predictability
+                style
+                told
+                favorite
+                eyeRollResponse
+                groanResponse
+                selfLaughResponse
+                createdAt
+            }
+        }
+        `
     }
     
     try {
@@ -31,7 +47,7 @@ export async function invokeQuery(query, variables) {
         return { success: true, data: response };
     }
     catch (error) {
-        return { success: false, error: "Failed to fetch data from Dapr binding" };
+        return { success: false, error: "Failed to fetch data from Dapr binding", error_msg: error };
     }
 
 }
@@ -69,7 +85,7 @@ export async function invokeCreateJoke(jokeObj) {
         return { success: true, data: response };
     }
     catch (error) {
-        return { success: false, error: error.message };
+        return { success: false, error: error };
     }
 }
 
@@ -81,15 +97,15 @@ export async function invokeDeleteMany(Ids) {
     const bindingName = 'graphql';
     const operation = 'mutation';
     const idString = '[' + Ids.map(id => `"${id}"`).join(', ') + ']';
-    const mutationSring = `
-            mutation DeleteMultipleOrders {
-                deleteOrders(ids: ${idString}) {
+    const mutationString = `
+            mutation DeleteMultipleJokes {
+                deleteJokes(ids: ${idString}) {
                     id
                 }  
             }
         `
     const metadata = {
-        mutation: mutationSring
+        mutation: mutationString
     }
     
     try {
@@ -97,11 +113,10 @@ export async function invokeDeleteMany(Ids) {
             client.binding.send(bindingName, operation, {}, metadata),
             DAPR_TIMEOUT
         );
-        return response;
+        return { success: true, data: response };
     }
     catch (error) {
-        console.error("Dapr binding request failed:", error);
-        throw new Error("Failed to invoke mutation via Dapr binding");
+        return { success: false, error: error };
     }
 
 }

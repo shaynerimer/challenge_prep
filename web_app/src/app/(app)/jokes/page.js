@@ -7,76 +7,74 @@ import { useState } from 'react';
 
 import useSWR, { mutate } from 'swr';
 import { SWRConfig } from 'swr';
-import { invokeQuery, invokeDeleteMany } from '@/lib/graphqlClient';
+import { invokeQueryAll, invokeDeleteMany } from '@/lib/graphqlClient';
 import { TrashIcon, PencilIcon } from '@heroicons/react/24/outline';
 
 export default function HelpPage() {
-    const [selectedOrders, setSelectedOrders] = useState(new Set());
+    const [selectedJokes, setSelectedJokes] = useState(new Set());
     const [selectAll, setSelectAll] = useState(false);
     const [sortField, setSortField] = useState('createdAt');
     const [sortDirection, setSortDirection] = useState('desc');
 
     // Use SWR to interact with Dapr binding to fetch GraphQL data
-    const fetcher = (query, variables) => invokeQuery(query, variables);
-    const orderQuery = `
-        query {
-            orders {
-                id,
-                productId,
-                orderQty,
-                createdAt,
-                confirmationNumber
-            }
-        }`
-    const { data, error } = useSWR(orderQuery, fetcher);
+    const fetcher = () => invokeQueryAll();
+    const { data, error } = useSWR("jokes", fetcher);
 
-    // Function to handle deleting selected orders when "delete selected" button is clicked
+    // Function to handle deleting selected jokes when "delete selected" button is clicked
     const handleDeleteSelected = async () => {
-        if (selectedOrders.size === 0) return;
+        if (selectedJokes.size === 0) return;
 
-        const orderIds = Array.from(selectedOrders);   
+        const jokeIds = Array.from(selectedJokes);   
         try {
-            await invokeDeleteMany(orderIds);
-            // Clear selected orders on success
-            setSelectedOrders(new Set());
-            setSelectAll(false);
+            const response = await invokeDeleteMany(jokeIds);
+            if (response && !response.error) {
+                // Clear selected jokes on success
+                setSelectedJokes(new Set());
+                setSelectAll(false);
+            } else {
+                console.error("Error deleting jokes:", response.error);
+            }
         } catch (error) {
-            console.error("Error deleting orders:", error);
+            console.error("Error deleting jokes:", error);
         }
 
-        // Revalidate the SWR cache to refresh the order list
-        mutate(orderQuery)
+        // Revalidate the SWR cache to refresh the joke list
+        mutate("jokes");
     }
 
-    // Function to handle deleting a single order
-    const handleDeleteSingle = async (orderId) => {
+    // Function to handle deleting a single joke
+    const handleDeleteSingle = async (jokeId) => {
         try {
-            await invokeDeleteMany([orderId]);
-            // Remove the deleted order from selected orders if it was selected
-            const newSelected = new Set(selectedOrders);
-            newSelected.delete(orderId);
-            setSelectedOrders(newSelected);
-            // Update selectAll state
-            setSelectAll(false);
+            const response = await invokeDeleteMany([jokeId]);
+            if (response && !response.error) {
+                // Remove the deleted joke from selected jokes if it was selected
+                const newSelected = new Set(selectedJokes);
+                newSelected.delete(jokeId);
+                setSelectedJokes(newSelected);
+                // Update selectAll state
+                setSelectAll(false);
+            } else {
+                console.error("Error deleting joke:", response.error);
+            }
         } catch (error) {
-            console.error("Error deleting order:", error);
+            console.error("Error deleting joke:", error);
         }
 
-        // Revalidate the SWR cache to refresh the order list
-        mutate(orderQuery)
+        // Revalidate the SWR cache to refresh the joke list
+        mutate("jokes");
     }
     
-    // Function to handle editing an order (placeholder for future implementation)
-    const handleEdit = (orderId) => {
+    // Function to handle editing a joke (placeholder for future implementation)
+    const handleEdit = (jokeId) => {
         // TODO: Implement edit functionality
-        console.log("Edit order:", orderId);
+        console.log("Edit joke:", jokeId);
     }
     
-    // Extract orders from GraphQL response
-    const rawOrders = data?.orders || [];
+    // Extract jokes from GraphQL response
+    const rawJokes = data?.data?.jokes || [];
     
-    // Sort orders based on current sort settings
-    const orders = [...rawOrders].sort((a, b) => {
+    // Sort jokes based on current sort settings
+    const jokes = [...rawJokes].sort((a, b) => {
         if (!sortField || !sortDirection) return 0;
         
         let aValue = a[sortField];
@@ -89,9 +87,15 @@ export default function HelpPage() {
         }
         
         // Handle numeric fields
-        if (sortField === 'orderQty') {
+        if (sortField === 'cheesiness' || sortField === 'predictability' || sortField === 'eyeRollResponse' || sortField === 'groanResponse' || sortField === 'selfLaughResponse') {
             aValue = parseInt(aValue);
             bValue = parseInt(bValue);
+        }
+        
+        // Handle boolean fields
+        if (sortField === 'told' || sortField === 'favorite') {
+            aValue = aValue ? 1 : 0;
+            bValue = bValue ? 1 : 0;
         }
         
         // Handle string fields
@@ -147,29 +151,29 @@ export default function HelpPage() {
 
     const handleSelectAll = () => {
         if (selectAll) {
-            setSelectedOrders(new Set());
+            setSelectedJokes(new Set());
         } else {
-            setSelectedOrders(new Set(orders.map(order => order.id)));
+            setSelectedJokes(new Set(jokes.map(joke => joke.id)));
         }
         setSelectAll(!selectAll);
     };
 
-    const handleOrderSelect = (orderId) => {
-        const newSelected = new Set(selectedOrders);
-        if (newSelected.has(orderId)) {
-            newSelected.delete(orderId);
+    const handleJokeSelect = (jokeId) => {
+        const newSelected = new Set(selectedJokes);
+        if (newSelected.has(jokeId)) {
+            newSelected.delete(jokeId);
         } else {
-            newSelected.add(orderId);
+            newSelected.add(jokeId);
         }
-        setSelectedOrders(newSelected);
-        setSelectAll(newSelected.size === orders.length);
+        setSelectedJokes(newSelected);
+        setSelectAll(newSelected.size === jokes.length);
     };
 
     // Show loading state
     if (!data && !error) {
         return (
             <div className='bg-transparent h-full w-full flex flex-col p-6'>
-                <h1 className='mb-10 text-4xl font-bold text-left'>Order History</h1>
+                <h1 className='mb-10 text-4xl font-bold text-left'>My Joke Collection</h1>
                 <div className="flex justify-center items-center h-32">
                     <span className="loading loading-spinner loading-lg"></span>
                 </div>
@@ -181,9 +185,9 @@ export default function HelpPage() {
     if (error) {
         return (
             <div className='bg-transparent h-full w-full flex flex-col p-6'>
-                <h1 className='mb-10 text-4xl font-bold text-left'>Order History</h1>
+                <h1 className='mb-10 text-4xl font-bold text-left'>Joke Collection</h1>
                 <div className="alert alert-error">
-                    <span>Error loading orders: {error.message}</span>
+                    <span>Error loading jokes: {error.message}</span>
                 </div>
             </div>
         );
@@ -192,9 +196,9 @@ export default function HelpPage() {
     return (
         <SWRConfig value={{ fetcher }}>
             <div className='bg-transparent h-full w-full flex flex-col p-6'>
-                <h1 className='mb-10 text-4xl font-bold text-left'>Order History</h1>
+                <h1 className='mb-10 text-4xl font-bold text-left'>Joke Collection</h1>
 
-                <button className="btn btn-error mb-4 w-45 text-error-content" disabled={selectedOrders.size === 0} onClick={handleDeleteSelected}>
+                <button className="btn btn-error mb-4 w-45 text-error-content" disabled={selectedJokes.size === 0} onClick={handleDeleteSelected}>
                     <TrashIcon className="h-5 w-5 mr-2" />
                     Delete Selected
                 </button>
@@ -214,37 +218,46 @@ export default function HelpPage() {
                                 <th className="border-r border-gray-300 py-2 px-3 text-sm">
                                     <button 
                                         className="flex items-center justify-between w-full hover:bg-gray-200 rounded px-1 py-1 transition-colors"
-                                        onClick={() => handleSort('productId')}
+                                        onClick={() => handleSort('joke')}
                                     >
-                                        <span>Product</span>
-                                        {getSortIcon('productId')}
+                                        <span>Joke</span>
+                                        {getSortIcon('joke')}
                                     </button>
                                 </th>
                                 <th className="border-r border-gray-300 py-2 px-3 text-sm">
                                     <button 
                                         className="flex items-center justify-between w-full hover:bg-gray-200 rounded px-1 py-1 transition-colors"
-                                        onClick={() => handleSort('orderQty')}
+                                        onClick={() => handleSort('style')}
                                     >
-                                        <span>Qty.</span>
-                                        {getSortIcon('orderQty')}
+                                        <span>Style</span>
+                                        {getSortIcon('style')}
                                     </button>
                                 </th>
                                 <th className="border-r border-gray-300 py-2 px-3 text-sm">
                                     <button 
                                         className="flex items-center justify-between w-full hover:bg-gray-200 rounded px-1 py-1 transition-colors"
-                                        onClick={() => handleSort('confirmationNumber')}
+                                        onClick={() => handleSort('cheesiness')}
                                     >
-                                        <span>Confirmation Number</span>
-                                        {getSortIcon('confirmationNumber')}
+                                        <span>Cheesiness</span>
+                                        {getSortIcon('cheesiness')}
                                     </button>
                                 </th>
                                 <th className="border-r border-gray-300 py-2 px-3 text-sm">
                                     <button 
                                         className="flex items-center justify-between w-full hover:bg-gray-200 rounded px-1 py-1 transition-colors"
-                                        onClick={() => handleSort('createdAt')}
+                                        onClick={() => handleSort('predictability')}
                                     >
-                                        <span>Ordered At</span>
-                                        {getSortIcon('createdAt')}
+                                        <span>Predictability</span>
+                                        {getSortIcon('predictability')}
+                                    </button>
+                                </th>
+                                <th className="border-r border-gray-300 py-2 px-3 text-sm">
+                                    <button 
+                                        className="flex items-center justify-between w-full hover:bg-gray-200 rounded px-1 py-1 transition-colors"
+                                        onClick={() => handleSort('favorite')}
+                                    >
+                                        <span>Favorite</span>
+                                        {getSortIcon('favorite')}
                                     </button>
                                 </th>
                                 <th className="py-2 px-3 text-sm">
@@ -253,33 +266,42 @@ export default function HelpPage() {
                             </tr>
                         </thead>
                         <tbody>
-                            {orders.map(order => (
-                                <tr key={order.id} className="border-b border-gray-200 h-10 hover:bg-gray-50">
+                            {jokes.map(joke => (
+                                <tr key={joke.id} className="border-b border-gray-200 h-10 hover:bg-gray-50">
                                     <td className="border-r border-gray-200 py-1 px-3">
                                         <input 
                                             type="checkbox" 
                                             className="checkbox checkbox-sm" 
-                                            checked={selectedOrders.has(order.id)}
-                                            onChange={() => handleOrderSelect(order.id)}
+                                            checked={selectedJokes.has(joke.id)}
+                                            onChange={() => handleJokeSelect(joke.id)}
                                         />
                                     </td>
-                                    <td className="border-r border-gray-200 py-1 px-3 text-sm">{order.productId}</td>
-                                    <td className="border-r border-gray-200 py-1 px-3 text-sm">{order.orderQty}</td>
-                                    <td className="border-r border-gray-200 py-1 px-3 text-sm">{order.confirmationNumber}</td>
-                                    <td className="border-r border-gray-200 py-1 px-3 text-sm">{new Date(parseInt(order.createdAt)).toLocaleString()}</td>
+                                    <td className="border-r border-gray-200 py-1 px-3 text-sm max-w-xs truncate" title={joke.joke}>
+                                        {joke.joke}
+                                    </td>
+                                    <td className="border-r border-gray-200 py-1 px-3 text-sm">{joke.style}</td>
+                                    <td className="border-r border-gray-200 py-1 px-3 text-sm">{joke.cheesiness}</td>
+                                    <td className="border-r border-gray-200 py-1 px-3 text-sm">{joke.predictability}</td>
+                                    <td className="border-r border-gray-200 py-1 px-3 text-sm">
+                                        {joke.favorite ? (
+                                            <span className="text-yellow-500">★</span>
+                                        ) : (
+                                            <span className="text-gray-300">☆</span>
+                                        )}
+                                    </td>
                                     <td className="py-1 px-3">
                                         <div className="flex gap-2">
                                             <button 
                                                 className="btn btn-sm btn-ghost p-1 hover:bg-blue-100"
-                                                onClick={() => handleEdit(order.id)}
-                                                title="Edit order"
+                                                onClick={() => handleEdit(joke.id)}
+                                                title="Edit joke"
                                             >
                                                 <PencilIcon className="h-4 w-4 text-blue-600" />
                                             </button>
                                             <button 
                                                 className="btn btn-sm btn-ghost p-1 hover:bg-red-100"
-                                                onClick={() => handleDeleteSingle(order.id)}
-                                                title="Delete order"
+                                                onClick={() => handleDeleteSingle(joke.id)}
+                                                title="Delete joke"
                                             >
                                                 <TrashIcon className="h-4 w-4 text-red-600" />
                                             </button>
