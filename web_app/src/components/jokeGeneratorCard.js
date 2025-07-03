@@ -8,7 +8,7 @@ export function JokeGeneratorCard({ swapCard }) {
 
     const [cheesiness, setCheesiness] = useState(2);
     const [predictability, setPredictability] = useState(1);
-    const [style, setStyle] = useState('Classic');
+    const [style, setStyle] = useState('Pun');
 
     // Labels and definitions for slider UI and ease of use
     const cheesinessLabels = ["Subtle", "Classic Groan", "Audible Sigh", "Eye Roll"];
