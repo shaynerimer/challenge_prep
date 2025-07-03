@@ -10,7 +10,10 @@
   "description": "",
   "dependencies": {
     "@dapr/dapr": "^3.5.2",
+    "@langchain/core": "^0.3.61",
+    "@langchain/google-genai": "^0.2.14",
     "express": "^5.1.0",
+    "langchain": "^0.3.29",
     "uuid": "^11.1.0",
     "winston": "^3.17.0",
     "xstate": "^5.20.0"
