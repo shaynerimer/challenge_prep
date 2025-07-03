@@ -1,0 +1,67 @@
+### Generate Joke - Valid Request
+POST http://localhost:3000/generateJoke
+Content-Type: application/json
+
+{
+  "cheesiness": 3,
+  "predictability": 1,
+  "style": "pun"
+}
+
+### Generate Joke - Invalid Request (missing cheesiness)
+POST http://localhost:3000/generateJoke
+Content-Type: application/json
+
+{
+  "predictability": 2,
+  "style": "pun"
+}
+
+### Generate Joke - Invalid Request (missing predictability)
+POST http://localhost:3000/generateJoke
+Content-Type: application/json
+
+{
+  "cheesiness": 2,
+  "style": "pun"
+}
+
+### Generate Joke - Invalid Request (missing style)
+POST http://localhost:3000/generateJoke
+Content-Type: application/json
+
+{
+  "cheesiness": 1,
+  "predictability": 3
+}
+
+### Generate Joke - Invalid Request (missing cheesiness and predictability)
+POST http://localhost:3000/generateJoke
+Content-Type: application/json
+
+{
+  "style": "pun"
+}
+
+### Generate Joke - Invalid Request (missing cheesiness and style)
+POST http://localhost:3000/generateJoke
+Content-Type: application/json
+
+{
+  "predictability": 1
+}
+
+### Generate Joke - Invalid Request (missing predictability and style)
+POST http://localhost:3000/generateJoke
+Content-Type: application/json
+
+{
+  "cheesiness": 3
+}
+
+### Generate Joke - Invalid Request (missing all parameters)
+POST http://localhost:3000/generateJoke
+Content-Type: application/json
+
+{
+}

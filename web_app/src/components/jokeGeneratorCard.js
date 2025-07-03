@@ -65,6 +65,7 @@ export function JokeGeneratorCard({ swapCard }) {
                                 step={1}
                                 value={cheesiness}
                                 onChange={e => setCheesiness(Number(e.target.value))}
+                                name='cheesiness'
                                 className="range range-primary w-full"
                             />
                             <div className="flex justify-between w-full mt-2 text-xs">
@@ -94,6 +95,7 @@ export function JokeGeneratorCard({ swapCard }) {
                                 step={1}
                                 value={predictability}
                                 onChange={e => setPredictability(Number(e.target.value))}
+                                name='predictability'
                                 className="range range-secondary w-full"
                             />
                             <div className="flex justify-between w-full mt-2 text-xs">
@@ -116,6 +118,7 @@ export function JokeGeneratorCard({ swapCard }) {
                         <select
                             className="select select-bordered w-full col-span-2"
                             value={style}
+                            name='style'
                             onChange={e => setStyle(e.target.value)}
                         >
                             <option>Pun</option>
