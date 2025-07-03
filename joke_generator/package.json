@@ -1,9 +1,9 @@
 {
-  "name": "order_processor",
+  "name": "joke_generator",
   "version": "1.0.0",
-  "main": "order_processor.js",
+  "main": "joke_generator.js",
   "scripts": {
-    "start": "node order_processor.js"
+    "start": "node main.js"
   },
   "author": "",
   "license": "ISC",

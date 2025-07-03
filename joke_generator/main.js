@@ -1,7 +1,7 @@
 const express = require('express');
 const { createActor, waitFor } = require('xstate');
 
-const { orderMachine } = require('./orderMachine');
+const { jokeMachine } = require('./stateMachine');
 const { logger } = require('./logger');
 
 
@@ -11,17 +11,12 @@ app.use(express.json());
 const SERVICE_APP_PORT = process.env.APP_PORT || 3000; // Port your Node.js app listens on
 
 
-/* /placeOrder endpoint
- * This endpoint receives an order request with productId and orderQty,
- * processes the order using the orderMachine, and returns a confirmation number
- * or an error message.
- */
-app.post('/placeOrder', async (req, res) => {
-    const { productId, orderQty } = req.body;
+app.post('/generateJoke', async (req, res) => {
+    const { cheesiness, predictability, style } = req.body;
 
     try {
-        const actor = createActor(orderMachine, {
-            input: { productId, orderQty: parseInt(orderQty) }
+        const actor = createActor(jokeMachine, {
+            input: { cheesiness, predictability, style }
         });
         actor.start();
         actor.send({ type: 'VALIDATE' });
@@ -33,20 +28,21 @@ app.post('/placeOrder', async (req, res) => {
 
         if (finalState.value === 'completed') {
             logger.info({
-                message: 'Order Processed',
-                orderDetails: {
-                    productId: productId,
-                    orderQty: orderQty
+                message: 'Joke Generated',
+                jokeDetails: {
+                    cheesiness: cheesiness,
+                    predictability: predictability,
+                    style: style,
+                    joke: finalState.context.joke
                 },
-                confirmationNumber: finalState.context.confirmationNumber,
                 trace: req.headers['traceparent']
             });
             return res.status(200).json({
-                confirmationNumber: finalState.context.confirmationNumber
+                joke: finalState.context.joke
             });
         } else if (finalState.value === 'failed') {
             return res.status(500).json({
-                error: finalState.context.errorMessage || 'Order processing failed'
+                error: finalState.context.errorMessage || 'Joke generation failed'
             });
         }
     } catch (err) {
@@ -57,5 +53,5 @@ app.post('/placeOrder', async (req, res) => {
 
 // Start listening for incoming requests
 app.listen(SERVICE_APP_PORT, () => {
-  logger.info({ message: `Order Processing Service listening on port ${SERVICE_APP_PORT}` });
+  logger.info({ message: `Joke Generation Service listening on port ${SERVICE_APP_PORT}` });
 });
