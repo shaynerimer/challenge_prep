@@ -3,13 +3,17 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/index.js",
+    "test": "jest --verbose"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "apollo-server-testing": "^2.25.3",
+    "jest": "^30.0.4",
+    "jest-mock-extended": "^4.0.0",
     "prisma": "^6.10.1"
   },
   "dependencies": {

@@ -15,21 +15,6 @@ const resolvers = {
         orderBy: { createdAt: 'desc' }
       })
     },
-    
-    // Get joke by ID
-    jokeById: async (parent, args, context) => {
-      return context.prisma.joke.findUnique({
-        where: { id: parseInt(args.id) }
-      })
-    },
-    
-    // Get favorite jokes
-    favoriteJokes: async (parent, args, context) => {
-      return context.prisma.joke.findMany({
-        where: { favorite: true },
-        orderBy: { createdAt: 'desc' }
-      })
-    },
   },
   
   Mutation: {
@@ -105,6 +90,12 @@ const server = new ApolloServer({
   }
 })
 
-server
-  .listen()
-  .then(({url}) => { console.log(`Apollo Server running on ${url}`) })
+// Export resolvers for testing
+module.exports = { resolvers };
+
+// Only start server if this file is run directly (not imported)
+if (require.main === module) {
+  server
+    .listen()
+    .then(({url}) => { console.log(`Apollo Server running on ${url}`) })
+}

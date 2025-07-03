@@ -1,8 +1,6 @@
 type Query {
   info: String!
   jokes: [Joke!]!
-  jokeById(id: ID!): Joke
-  favoriteJokes: [Joke!]!
 }
 
 type Mutation {

@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { JokeGeneratorCard } from '@/components/jokeGeneratorCard';
 import { JokeConfirmationCard } from '@/components/jokeConfirmationCard';
 
-export default function AppPage() {
+export default function HomePage() {
 
     const [jokeNeedsConfirmation, setJokeNeedsConfirmation] = useState(false);
     const [joke, setJoke] = useState(null);
