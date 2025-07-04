@@ -3,8 +3,8 @@ import '@/app/globals.css';
 export default function LandingLayout({ children }) {
     return (
         <html lang="en">
-            <body className='flex min-h-dvh justify-center bg-base-200'>
-                <div className='grow'>
+            <body className='min-h-dvh bg-gray-200'>
+                <div className='min-h-dvh'>
                     { children }
                 </div>
             </body>

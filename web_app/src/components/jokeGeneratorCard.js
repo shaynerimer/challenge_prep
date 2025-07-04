@@ -12,7 +12,7 @@ export function JokeGeneratorCard({ swapCard }) {
 
     // Labels and definitions for slider UI and ease of use
     const cheesinessLabels = ["Subtle", "Classic Groan", "Audible Sigh", "Eye Roll"];
-    const predictabilityLabels = ["Unexpected", "Familiar Setup", "Obvious"];
+    const predictabilityLabels = ["Unexpected", "Familiar", "Obvious"];
     const cheesinessDefinitions = [
         "Simple and clear, but not painfully so.  They'll never see it coming and you may even get a real laugh.",
         "The sweet spot for most dad jokes.  These jokes feature clear puns that are easy to spot but still manage to land a satisfying groan.",

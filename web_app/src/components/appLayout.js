@@ -1,6 +1,6 @@
 'use client'
 import { UserCircleIcon, Cog8ToothIcon, ArrowRightStartOnRectangleIcon, ChevronDownIcon, SunIcon, MoonIcon, LifebuoyIcon, BoltIcon} from '@heroicons/react/24/outline';
-import Logo from '@/assets/logo.svg'
+import Logo from '@/assets/navLogo.svg'
 import avatar_placeholder from '@/app/favicon.ico'
 import Link from 'next/link'
 import Image from 'next/image'
