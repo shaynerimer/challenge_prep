@@ -3,4 +3,4 @@ WORKDIR /app
 COPY . .
 RUN npm install
 EXPOSE 3000
-CMD ["node", "order_processor.js"]
+CMD ["node", "main.js"]

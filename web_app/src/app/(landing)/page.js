@@ -1,6 +1,5 @@
-import Logo from '@/assets/sg_heroLogo.svg'
-import ArchDiagram from '@/assets/archDiagram.svg'
-import Image from 'next/image'
+import Logo from '@/public/assets/sg_heroLogo.svg'
+import ArchDiagram from '@/public/assets/archDiagram.svg'
 import { SignedIn, SignedOut } from "@clerk/nextjs";
 import Link from 'next/link';
 
@@ -12,7 +11,7 @@ export default function LandingPage() {
             {/* Scroll Section 1 - Hero Logo, Title, and Log-in Invitation */}
             <div className='flex flex-row gap-10 justify-around items-center min-h-dvh w-full p-25'>
                 <div>
-                    <Image src={Logo} alt="Brand Logo" className="h-120 w-auto" />
+                    <Logo alt="SecureGive Logo" className="h-120 w-auto" />
                 </div>
                 
                 <div className='flex flex-col gap-20 justify-center items-center'>
@@ -37,7 +36,7 @@ export default function LandingPage() {
 
             {/* Scroll Section 2 - Architecture Diagram */}
             <div className='min-h-dvh w-full bg-base-100 flex justify-center items-center p-35'>
-                <Image src={ArchDiagram} alt="Architecture Diagram" className="w-full h-auto" />
+                <ArchDiagram alt="Architecture Diagram" className="w-full h-auto" />
             </div>
 
         </div>

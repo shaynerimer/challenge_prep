@@ -8,7 +8,9 @@ export default function Layout({ children }) {
   return (
     <ClerkProvider>
       <StoreProvider>
-        <AppLayout children={children}/>
+        <AppLayout>
+          {children}
+        </AppLayout>
       </StoreProvider>
     </ClerkProvider>
   )

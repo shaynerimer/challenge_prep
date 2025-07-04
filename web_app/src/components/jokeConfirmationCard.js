@@ -68,7 +68,7 @@ export function JokeConfirmationCard({ joke, swapCard }) {
             { !returning &&
                 <div className="flex gap-4 place-self-end mt-4">
                     <button className="btn btn-outline" onClick={swapCard} type="button" disabled={saving}>
-                        Let's Go Back
+                        Let&apos;s Go Back
                     </button>
                     <button className="btn btn-success" onClick={handleSave} type="button" disabled={saving}>
                         {saving ? <span className='loading loading-spinner'></span> : 'Keep It!'}

@@ -1,6 +1,6 @@
 'use client'
 import { UserCircleIcon, Cog8ToothIcon, ArrowRightStartOnRectangleIcon, ChevronDownIcon, SunIcon, MoonIcon, LifebuoyIcon, BoltIcon} from '@heroicons/react/24/outline';
-import Logo from '@/assets/navLogo.svg'
+import Logo from '@/public/assets/navLogo.svg'
 import avatar_placeholder from '@/app/favicon.ico'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -26,7 +26,7 @@ export default function AppLayout({ children }) {
           <div className="navbar z-3 bg-base-200 h-16 py-4 pr-10 shadow-lg">
             <div className="flex-1">
               <Link href='/' className="btn btn-ghost normal-case text-xl no-animation hover:border-transparent hover:shadow-none hover:bg-transparent active:bg-transparent">
-                <Image src={Logo} alt="Brand Logo" className="h-10 w-auto" />
+                <Logo alt="Brand Logo" className="h-10 w-auto" />
               </Link>
             </div>
             <div className="flex-none">
