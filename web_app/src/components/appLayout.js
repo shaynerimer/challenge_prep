@@ -7,12 +7,15 @@ import Image from 'next/image'
 import SidebarDrawer from './sidebarDrawer.js'
 
 import { useAppSelector, useAppDispatch, useAppStore } from "@/lib/hooks";
+import { useClerk } from '@clerk/nextjs';
 import { setTheme } from "@/lib/features/theme/themeSlice";
 
 export default function AppLayout({ children }) {
 
     const dispatch = useAppDispatch()
     const theme = useAppSelector((state) => state.theme.value);
+
+    const { signOut, user, loaded } = useClerk();
 
     return (
     <html lang="en" data-theme={theme}>
@@ -46,16 +49,20 @@ export default function AppLayout({ children }) {
             {/* User Profile Dropdown Menu */}
             <div className="flex-none ml-5">
               <div className="dropdown dropdown-end">
-                <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
+                <label tabIndex={0} className="btn btn-ghost hover:bg-transparent hover:border-none btn-circle avatar h-15 w-15">
                   <div className="size-[45px] rounded-full hover:scale-110">
-                    <Image src={avatar_placeholder} alt="User Avatar" width="45" height="45" />
+                    <Image src={loaded ? user.imageUrl : avatar_placeholder} alt="User Avatar" width="45" height="45" />
                   </div>
                 </label>
                 <ul tabIndex={0} className="mt-3 p-2 shadow menu menu-compact dropdown-content bg-base-100 rounded-box w-52">
                   <li className='group'><a><UserCircleIcon className="h-5 w-5 mr-2 group-hover:scale-110" />Profile</a></li>
                   <li className='group'><a><Cog8ToothIcon className="h-5 w-5 mr-2 group-hover:scale-110" />Settings</a></li>
                   <li className='group'>
-                    <button onClick={() => {}}>
+                    <button onClick={() => {
+                        signOut({
+                          redirectUrl: '/',
+                        })}
+                      }>
                       <ArrowRightStartOnRectangleIcon className="h-5 w-5 mr-2 group-hover:scale-110"/>
                       Logout
                     </button>

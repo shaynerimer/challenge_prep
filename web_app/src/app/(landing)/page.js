@@ -1,6 +1,8 @@
 import Logo from '@/assets/sg_heroLogo.svg'
 import ArchDiagram from '@/assets/archDiagram.svg'
 import Image from 'next/image'
+import { SignedIn, SignedOut } from "@clerk/nextjs";
+import Link from 'next/link';
 
 export default function LandingPage() {
     
@@ -18,9 +20,18 @@ export default function LandingPage() {
                        <h1>A Witty Demonstraion of<br /></h1>
                        <h1 className='lg:indent-10 text-xl sm:text-3xl md:text-4xl lg:text-5xl'>A <span className='font-bold text-2xl sm:text-4xl md:text-5xl lg:text-6xl'>Seriously</span> Good Architecture</h1>
                     </div>
-                    <button className='btn btn-primary text-lg px-8 py-4'>
+
+                    <SignedOut>
+                    <Link href='/login' className='btn btn-primary text-lg px-8 py-4'>
                         Log In
-                    </button> 
+                    </Link> 
+                    </SignedOut>
+
+                    <SignedIn>
+                        <Link href='/app' className='btn btn-primary text-lg px-8 py-4'>
+                            Welcome Back
+                        </Link>
+                    </SignedIn>
                 </div>
             </div>
 
