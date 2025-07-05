@@ -1,8 +1,4 @@
 'use client'
-// ###############################
-// ####### NEEDS REVIEW ##########
-// ###############################
-
 import { useState } from 'react';
 
 import useSWR, { mutate } from 'swr';
@@ -22,7 +18,7 @@ export default function HelpPage() {
     const fetcher = () => invokeQueryAll();
     const { data, error } = useSWR("jokes", fetcher);
 
-    // Function to handle deleting selected jokes when "delete selected" button is clicked
+    // Handle deleting selected jokes when "delete selected" button is clicked
     const handleDeleteSelected = async () => {
         if (selectedJokes.size === 0) return;
 
@@ -40,11 +36,11 @@ export default function HelpPage() {
             console.error("Error deleting jokes:", error);
         }
 
-        // Revalidate the SWR cache to refresh the joke list
+        // Trigger re-validation of the SWR cache
         mutate("jokes");
     }
 
-    // Function to handle deleting a single joke
+    // Handle deleting a single joke
     const handleDeleteSingle = async (jokeId) => {
         try {
             const response = await invokeDeleteMany([jokeId]);
@@ -53,7 +49,6 @@ export default function HelpPage() {
                 const newSelected = new Set(selectedJokes);
                 newSelected.delete(jokeId);
                 setSelectedJokes(newSelected);
-                // Update selectAll state
                 setSelectAll(false);
             } else {
                 console.error("Error deleting joke:", response.error);
@@ -62,47 +57,50 @@ export default function HelpPage() {
             console.error("Error deleting joke:", error);
         }
 
-        // Revalidate the SWR cache to refresh the joke list
+        // Trigger re-validation of the SWR cache
         mutate("jokes");
     }
     
-    // Function to handle toggling favorite status (placeholder for future implementation)
+    // Handle toggling favorite status
     const handleToggleFavorite = async (joke) => {
         const updatedJoke = {
             ...joke,
-            favorite: !joke.favorite // Toggle the favorite status
+            favorite: !joke.favorite
         };
         try {
-            const response = await invokeUpdateJoke(updatedJoke);
+            const response = await invokeUpdateJoke(updatedJoke, 'favorite');
             if (response && response.error) {
-                // Optionally handle success, e.g. show a toast or update UI
                 console.error("Error updating joke favorite status:", response.error);
                 
             }
+
+            // Trigger re-validation of the SWR cache
             mutate("jokes");
         } catch (error) {
             console.error("Error updating joke favorite status:", error);
         }
     }
 
+    // Handle toggling favorite status
     const handleToggleTold = async (joke) => {
         const updatedJoke = {
             ...joke,
-            told: !joke.told // Toggle the told status
+            told: !joke.told
         };
         try {
-            const response = await invokeUpdateJoke(updatedJoke);
+            const response = await invokeUpdateJoke(updatedJoke, 'told');
             if (response && response.error) {
-                // Optionally handle success, e.g. show a toast or update UI
                 console.error("Error updating joke told status:", response.error);
             }
+
+            // Trigger re-validation of the SWR cache
             mutate("jokes");
         } catch (error) {
             console.error("Error updating joke told status:", error);
         }
     }
 
-    // Function to handle selecting/deselecting all jokes
+    // Handle selecting/deselecting all jokes
     const handleSelectAll = () => {
         if (selectAll) {
             setSelectedJokes(new Set());
@@ -112,7 +110,7 @@ export default function HelpPage() {
         setSelectAll(!selectAll);
     };
 
-    // Function to handle selecting/deselecting individual jokes
+    // Handle selecting/deselecting individual jokes
     const handleJokeSelect = (jokeId) => {
         const newSelected = new Set(selectedJokes);
         if (newSelected.has(jokeId)) {
@@ -135,7 +133,7 @@ export default function HelpPage() {
         ? rawJokes 
         : rawJokes.filter(joke => joke.style === filterStyle);
     
-    // Sort filtered jokes based on current sort settings
+    // Specifiy Sort Rules for specific data types
     const filteredAndSortedJokes = [...filteredJokes].sort((a, b) => {
         if (!sortField || !sortDirection) return 0;
         
@@ -282,7 +280,7 @@ export default function HelpPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                     {filteredAndSortedJokes.map(joke => (
                         <div key={joke.id} className="card bg-base-100 shadow-lg border border-gray-200 hover:shadow-xl transition-shadow relative">
-                            {/* Checkbox in top right corner */}
+                            {/* Select Checkbox in top right corner */}
                             <div className="absolute top-2 right-2 z-10">
                                 <input 
                                     type="checkbox" 
@@ -298,7 +296,7 @@ export default function HelpPage() {
                                     {joke.joke}
                                 </p>
                                 
-                                {/* Joke metadata */}
+                                {/* Joke Details */}
                                 <div className="space-y-2 text-xs text-gray-600">
                                     <div className="flex justify-between">
                                         <span className="font-medium">Style:</span>
@@ -317,6 +315,7 @@ export default function HelpPage() {
                                 {/* Action buttons */}
                                 <div className="card-actions justify-between items-center mt-4 pt-3 border-t border-gray-200">
                                     <div className='flex justify-between w-25'>
+                                    {/* Toggle Favorite Status */}
                                     <button 
                                         className="btn btn-sm btn-ghost p-1 hover:bg-yellow-100"
                                         onClick={() => handleToggleFavorite(joke)}
@@ -329,6 +328,7 @@ export default function HelpPage() {
                                         )}
                                     </button>
 
+                                    {/* Toggle Told Status */}
                                     <button
                                         className={`btn btn-sm ${!joke.told ? 'btn-base' : 'btn-success'} ${!joke.told ? 'btn-outline' : ''} w-16 p-1 hover:bg-blue-100`}
                                         onClick={() => handleToggleTold(joke)}
@@ -338,6 +338,7 @@ export default function HelpPage() {
                                     </button>
                                     </div>
                                     
+                                    {/* Delete button */}
                                     <button 
                                         className="btn btn-sm btn-ghost p-1 hover:bg-red-100"
                                         onClick={() => handleDeleteSingle(joke.id)}

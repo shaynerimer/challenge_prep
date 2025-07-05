@@ -1,13 +1,16 @@
 import '@/app/globals.css';
+import { ClerkProvider } from "@clerk/nextjs";
 
 export default function LandingLayout({ children }) {
     return (
-        <html lang="en">
-            <body className='flex min-h-dvh justify-center bg-base-200'>
-                <div className='grow'>
-                    { children }
-                </div>
-            </body>
-        </html>
+        <ClerkProvider>
+            <html lang="en">
+                <body className='min-h-dvh bg-gray-200'>
+                    <div className='min-h-dvh'>
+                        { children }
+                    </div>
+                </body>
+            </html>
+        </ClerkProvider>
     )
 }

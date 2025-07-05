@@ -12,24 +12,23 @@ export function JokeGeneratorCard({ swapCard }) {
 
     // Labels and definitions for slider UI and ease of use
     const cheesinessLabels = ["Subtle", "Classic Groan", "Audible Sigh", "Eye Roll"];
-    const predictabilityLabels = ["Unexpected", "Familiar Setup", "Obvious"];
+    const predictabilityLabels = ["Unexpected", "Familiar", "Obvious"];
     const cheesinessDefinitions = [
-        "Simple and clear, but not painfully so.  They'll never see it coming and you may even get a real laugh.",
-        "The sweet spot for most dad jokes.  These jokes feature clear puns that are easy to spot but still manage to land a satisfying groan.",
-        "Unapologetically cheesy.  Interpretations are pushed to an absurd degree.  Dad's who use these jokes are truly commited to their craft.",
-        "Joke's so obvious and literal that your family will skip right over groans and go straight for the eye roll.  You'll be proud of yourself for hours after a succesful delivery."
+        "Simple and clear, but not painfully so. They'll never see it coming and you may even get a real laugh.",
+        "The sweet spot for most dad jokes. These jokes feature clear puns that are easy to spot but still manage to land a satisfying groan.",
+        "Unapologetically cheesy. Interpretations are pushed to an absurd degree. Dad's who use these jokes are truly commited to their craft.",
+        "Joke's so obvious and literal that your family will skip right over groans and go straight for the eye roll. You'll be proud of yourself for hours after a succesful delivery."
     ]
     const predictabilityDefinitions = [
-        'More likely to illicit an "Oh, I see what you did there" than a groan.',
+        "More likely to illicit an \"Oh, I see what you did there\" than a groan.",
         "These jokes follow a familiar pattern that your family has likley heard from either you or other genius dads.",
-        'Your wife is likely to hold up her hand and say "Please don\'t do it" before you even finish the setup.'
+        "Your wife is likely to hold up her hand and say \"Please don't do it\" before you even finish the setup."
     ]
 
     // Handle submission and call server action
     const handleSubmit = async (prevState, formData) => {
         // Call createJoke action
         const res = await createJoke(prevState, formData)
-        console.log('Joke Creation Response:', res);
         
         // If joke generation was successful, notify parent component
         if (res.status === 'success' && swapCard) {
@@ -113,7 +112,7 @@ export function JokeGeneratorCard({ swapCard }) {
                     <div className="mb-4 grid grid-cols-4 gap-10 items-center">
                         <label className="label flex flex-col items-start mr-5 col-span-2">
                             <span className="label-text text-3xl font-bold">Style</span>
-                            <p className="label-text text-sm text-gray-500">Pulling from the millions of dads who came before you.<br />Don't let them down.</p>
+                            <p className="label-text text-sm text-gray-500">Pulling from the millions of dads who came before you.<br />Don&apos;t let them down.</p>
                         </label>
                         <select
                             className="select select-bordered w-full col-span-2"

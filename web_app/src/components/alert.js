@@ -8,7 +8,7 @@ export function Alert({ variant, TTL, children }) {
         setTimeout(() => {
             setAlert(false);
         }, TTL * 1000);
-    }, []);
+    }, [TTL]);
 
     if (alert) {
         if (variant === 'success') {

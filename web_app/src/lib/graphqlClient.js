@@ -1,9 +1,43 @@
 'use server'
 import { DaprClient, CommunicationProtocolEnum } from "@dapr/dapr";
+import winston from 'winston';
+import { auth } from '@clerk/nextjs/server';
 
 const DAPR_HOST = process.env.DAPR_HOST || "http://localhost";
 const DAPR_HTTP_PORT = process.env.DAPR_HTTP_PORT || "3500";
 const DAPR_TIMEOUT = 2000; // 2 seconds
+
+/* --- Begin Logging Config --- */
+
+const addLogType = winston.format((info) => {
+    info.logType = 'Application';
+    return info;
+});
+
+const logger = winston.createLogger({
+    level: 'info',
+    format: winston.format.combine(
+        addLogType(),
+        winston.format.json()
+    ),
+    transports: [new winston.transports.Console()]
+});
+
+/* --- End Logging Config --- */
+
+// Obtain current user from Clerk
+async function getCurrentUser() {
+    try {
+        const { userId } = await auth();
+        if (!userId) {
+            return 'unauthenticated_user';
+        }
+        return userId;
+    } catch (error) {
+        logger.warn('Failed to get current User', { error: error.message });
+        return 'unauthenticated_user';
+    }
+}
 
 // Helper function to add timeout to any binding.send call
 function withTimeout(promise, timeoutMs) {
@@ -82,6 +116,16 @@ export async function invokeCreateJoke(jokeObj) {
             client.binding.send(bindingName, operation, {}, metadata),
             DAPR_TIMEOUT
         );
+        
+        const currentUser = await getCurrentUser();
+        logger.info({
+            user: currentUser,
+            action: 'Saved Joke',
+            joke: {
+                id: response.createJoke.id,
+                text: JSON.stringify(jokeObj.joke)
+            }
+        });
         return { success: true, data: response };
     }
     catch (error) {
@@ -90,7 +134,7 @@ export async function invokeCreateJoke(jokeObj) {
 }
 
 // Mutation to update a joke in the database
-export async function invokeUpdateJoke(jokeObj) {
+export async function invokeUpdateJoke(jokeObj, action) {
     const client = new DaprClient(DAPR_HOST, DAPR_HTTP_PORT, CommunicationProtocolEnum.HTTP);
     const bindingName = 'graphql';
     const operation = 'mutation';
@@ -120,6 +164,16 @@ export async function invokeUpdateJoke(jokeObj) {
             client.binding.send(bindingName, operation, {}, metadata),
             DAPR_TIMEOUT
         );
+        
+        const currentUser = await getCurrentUser();
+        logger.info({
+            user: currentUser,
+            action: action === 'told' ? 'Toggled Told Status' : 'Toggled Favorite Status',
+            joke: {
+                id: jokeObj.id,
+                text: JSON.stringify(jokeObj.joke)
+            }
+        });
         return { success: true, data: response };
     }
     catch (error) {
@@ -150,6 +204,15 @@ export async function invokeDeleteMany(Ids) {
             client.binding.send(bindingName, operation, {}, metadata),
             DAPR_TIMEOUT
         );
+        
+        const currentUser = await getCurrentUser();
+        logger.info({
+            user: currentUser,
+            action: 'Deleted Jokes',
+            jokes: {
+                ids: Ids,
+            }
+        });
         return { success: true, data: response };
     }
     catch (error) {
