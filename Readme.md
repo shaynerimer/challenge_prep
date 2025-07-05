@@ -43,7 +43,7 @@ npx prisma studio
 ```
 
 ### Architecture Diagram
-![Architecture Diagram](https://github.com/user-attachments/assets/f1e09ef6-b6d2-4bb6-b41d-4b3ebb27c565)
+![Architecture Diagram](https://github.com/user-attachments/assets/3ac64632-1596-46b1-9349-0ce1a7b82fdc)
 
 ---
 
