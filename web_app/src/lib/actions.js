@@ -30,7 +30,6 @@ export async function createJoke(prevState, formData) {
             )
         ]);
         clearTimeout(timeout);
-        console.log('Joke Creation Response:', response);
         return {
             status: 'success',
             joke: response.joke,

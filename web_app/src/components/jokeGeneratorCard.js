@@ -29,7 +29,6 @@ export function JokeGeneratorCard({ swapCard }) {
     const handleSubmit = async (prevState, formData) => {
         // Call createJoke action
         const res = await createJoke(prevState, formData)
-        console.log('Joke Creation Response:', res);
         
         // If joke generation was successful, notify parent component
         if (res.status === 'success' && swapCard) {
