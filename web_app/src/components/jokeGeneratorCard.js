@@ -16,12 +16,12 @@ export function JokeGeneratorCard({ swapCard }) {
     const cheesinessDefinitions = [
         "Simple and clear, but not painfully so. They'll never see it coming and you may even get a real laugh.",
         "The sweet spot for most dad jokes. These jokes feature clear puns that are easy to spot but still manage to land a satisfying groan.",
-        "Unapologetically cheesy. Interpretations are pushed to an absurd degree. Dad's who use these jokes are truly commited to their craft.",
-        "Joke's so obvious and literal that your family will skip right over groans and go straight for the eye roll. You'll be proud of yourself for hours after a succesful delivery."
+        "Unapologetically cheesy. Interpretations are pushed to an absurd degree. Dads who use these jokes are truly committed to their craft.",
+        "Joke's so obvious and literal that your family will skip right over groans and go straight for the eye roll. You'll be proud of yourself for hours after a successful delivery."
     ]
     const predictabilityDefinitions = [
         "More likely to illicit an \"Oh, I see what you did there\" than a groan.",
-        "These jokes follow a familiar pattern that your family has likley heard from either you or other genius dads.",
+        "These jokes follow a familiar pattern that your family has likely heard from either you or other genius dads.",
         "Your wife is likely to hold up her hand and say \"Please don't do it\" before you even finish the setup."
     ]
 
