@@ -1,6 +1,7 @@
 'use server'
 import { DaprClient, CommunicationProtocolEnum } from "@dapr/dapr";
 import winston from 'winston';
+import { auth } from '@clerk/nextjs/server';
 
 const DAPR_HOST = process.env.DAPR_HOST || "http://localhost";
 const DAPR_HTTP_PORT = process.env.DAPR_HTTP_PORT || "3500";
@@ -23,6 +24,20 @@ const logger = winston.createLogger({
 });
 
 /* --- End Logging Config --- */
+
+// Obtain current user from Clerk
+async function getCurrentUser() {
+    try {
+        const { userId } = await auth();
+        if (!userId) {
+            return 'unauthenticated_user';
+        }
+        return userId;
+    } catch (error) {
+        logger.warn('Failed to get current User', { error: error.message });
+        return 'unauthenticated_user';
+    }
+}
 
 // Helper function to add timeout to any binding.send call
 function withTimeout(promise, timeoutMs) {
@@ -101,8 +116,10 @@ export async function invokeCreateJoke(jokeObj) {
             client.binding.send(bindingName, operation, {}, metadata),
             DAPR_TIMEOUT
         );
+        
+        const currentUser = await getCurrentUser();
         logger.info({
-            user: 'test_user',
+            user: currentUser,
             action: 'Saved Joke',
             joke: {
                 id: response.createJoke.id,
@@ -147,8 +164,10 @@ export async function invokeUpdateJoke(jokeObj, action) {
             client.binding.send(bindingName, operation, {}, metadata),
             DAPR_TIMEOUT
         );
-         logger.info({
-            user: 'test_user',
+        
+        const currentUser = await getCurrentUser();
+        logger.info({
+            user: currentUser,
             action: action === 'told' ? 'Toggled Told Status' : 'Toggled Favorite Status',
             joke: {
                 id: jokeObj.id,
@@ -185,8 +204,10 @@ export async function invokeDeleteMany(Ids) {
             client.binding.send(bindingName, operation, {}, metadata),
             DAPR_TIMEOUT
         );
+        
+        const currentUser = await getCurrentUser();
         logger.info({
-            user: 'test_user',
+            user: currentUser,
             action: 'Deleted Jokes',
             jokes: {
                 ids: Ids,
