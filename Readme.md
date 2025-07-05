@@ -1,7 +1,7 @@
 # SecureGive Code Challenge
 ## Dad Joke Generator
 
-Thank you for the opportunity to participate in your code challenge!  In addition to basic CRUD functionality, I have designed this application to demonstrate some of the more powerful architectual patterns I have experience with.  I hope you enjoy your reivew of this witty demonstration of a seriously powerful architecture.
+Thank you for the opportunity to participate in your code challenge!  In addition to basic CRUD functionality, I have designed this application to demonstrate some of the more powerful architectural patterns I have experience with.  I hope you enjoy your review of this witty demonstration of a seriously powerful architecture.
   
 In particular:
 - **Dapr** - Distributed Application Runtime for Observability and Abstracting Integrations
@@ -25,7 +25,7 @@ In particular:
 ## Application Structure
 This Dad Joke Generator is a distributed application running on the Dapr framework.  It consists of three distinct services, each with their own project folder combined in this repo.  
 - **web_app** - A front-end UI build in Next.js that offers a landing page and an application portal for authenticated users.  Authentication is handled by Clerk.  Only select gmail accounts are allowed and sign-up is disabled.  
-    Service-invoking Front-end components operate via server actions which interact with external services via the Dapr Service Invokation building block or Dapr bindings (in the case of direct GraphQL calls).
+    Service-invoking Front-end components operate via server actions which interact with external services via the Dapr Service Invocation building block or Dapr bindings (in the case of direct GraphQL calls).
 
   
 - **joke_generator** - A back-end Node.js service with a single /createJoke Express API endpoint.  Upon calling, the joke_generator service starts an Xstate actor which progresses through the following states:
@@ -57,7 +57,7 @@ As the application relies on the Dapr framework, you must either run the applica
     - Docker
     - Node.js
     - tmux (optional - if you intend to use the provided helper script)
-2. Initalize a self-hosted Dapr environment following [Dapr's documentation](https://docs.dapr.io/operations/hosting/self-hosted/self-hosted-with-docker/)
+2. Initialize a self-hosted Dapr environment following [Dapr's documentation](https://docs.dapr.io/operations/hosting/self-hosted/self-hosted-with-docker/)
 3. Create a .env file in the joke_generator directory and set the following variables:
 ```
 GOOGLE_API_KEY=<Your Google AI Studio API Key>
@@ -91,7 +91,7 @@ npx prisma migrate dev
 
 ### Kubernetes Mode
 
-1. Deploy a [kind cluster](https://kind.sigs.k8s.io/) follwing the [instructions here](./docs/cluster_setup.md)
+1. Deploy a [kind cluster](https://kind.sigs.k8s.io/) following the [instructions here](./docs/cluster_setup.md)
 2. **Under Construction** - Follow [Issue #8](https://github.com/shaynerimer/challenge_prep/issues/8) for updates
 
 ---
@@ -101,7 +101,7 @@ npx prisma migrate dev
 Unit testing for all CRUD operations is provided using Jest and Prisma Mocking (to ensure the application database is not impacted).  
 Two test groups are provided:
 - **Test Environment Validation** - Ensures the mock prisma environment is configured correctly and all resolvers have been copied from the production to test environment.  
-- **CRUD Unit Tests** - Specific unit tests for all Create, Retreive, Update, and Delete operations
+- **CRUD Unit Tests** - Specific unit tests for all Create, Read, Update, and Delete operations
 
 ```bash
 cd graphql_engine
