@@ -8,7 +8,7 @@ In particular:
 - **Xstate** - State Machines and Actors
 - **Clerk**- Authentication
 - **Langchain** + Gemini - Generative AI
-- **ElasticStack** + Zipkin - Log Discovery and Distributed Tracing
+- **ElasticStack + Zipkin** - Log Discovery and Distributed Tracing
 - **Apollo + Prisma** - GraphQL Server and Database Operations
 
 **Coding Challenge Requirements:**
@@ -48,7 +48,7 @@ npx prisma studio
 ---
 
 ## Running the Application
-As the application relies on the Dapr framework, you must either run the application using self-hosted Dapr or deploy the application to a Kubernetes cluster configured for Dapr.
+As the application relies on the Dapr framework, you must either run the application using self-hosted Dapr or deploy the application to a Kubernetes cluster configured for Dapr.  This documentation only addresses self-hosted mode.
 
 ### Self Hosted Mode
 
@@ -87,12 +87,6 @@ npx prisma migrate dev
 ```
 8. Navigate to http://localhost:3000 to view the application
 
-
-
-### Kubernetes Mode
-
-1. Deploy a [kind cluster](https://kind.sigs.k8s.io/) following the [instructions here](./docs/cluster_setup.md)
-2. **Under Construction** - Follow [Issue #8](https://github.com/shaynerimer/challenge_prep/issues/8) for updates
 
 ---
 
