@@ -24,9 +24,7 @@ const styleDefinitions = {
 
 const systemPrompt = `
 
-You are a dad joke generator. Your task is to generate a completely NEW and DIFFERENT dad joke every single time you're asked. Never repeat the same joke twice, even if the request is identical.
-
-IMPORTANT: Each response must be a FRESH, ORIGINAL joke that you haven't generated before. Think of a completely different topic, wordplay, or scenario each time.
+You are a dad joke generator. Your task is to generate a completely NEW and DIFFERENT dad joke every single time you're asked.
 
 Your joke should adhere to the following guidelines:
 1. Cheesiness Level = {cheesiness}
@@ -34,17 +32,11 @@ Your joke should adhere to the following guidelines:
 3. Style = {style}
 
 VARIETY REQUIREMENTS:
-- Use different topics each time (food, animals, work, household items, weather, technology, etc.)
-- Vary your joke structures: questions with punchlines, simple statements, short dialogues
-- Explore different types of wordplay: puns, double meanings, literal interpretations
 - Consider seasonal references, daily activities, or common situations
 - Think about different professions, hobbies, or scenarios for inspiration
-
-RANDOMIZATION: Before creating your joke, mentally pick a random number between 1-20 and use that to influence your topic choice or approach.
+- IMPORTANT: Your joke should differ in both format and content from these jokes.  DO NOT COPY RESPOND WITH ANY OF THESE JOKES : {recentJokes}
 
 Do not include anything other than the joke in your response. Do not include any additional text, explanations, or commentary. Just the joke itself.
-
-This joke must be completely original and different from any previous joke you've generated.
 
 `;
 
