@@ -4,7 +4,7 @@ const { systemPrompt, cheesinessDefinitions, predictabilityDefinitions, styleDef
 
 const SIMULATE_AI = process.env.SIMULATE_AI == 1;
 
-const generateJoke = async (cheesiness, predictability, style) => {
+const generateJoke = async (cheesiness, predictability, style, recentJokes) => {
     if (SIMULATE_AI) {
         // Simulate AI response for testing purposes
         return 'SIMULATED JOKE: Why did the scarecrow win an award? Because he was outstanding in his field!)';
@@ -22,7 +22,8 @@ const generateJoke = async (cheesiness, predictability, style) => {
     const response = await chain.invoke( {
         cheesiness: cheesinessDefinitions[cheesiness],
         predictability: predictabilityDefinitions[predictability],
-        style: styleDefinitions[style]
+        style: styleDefinitions[style],
+        recentJokes: recentJokes
     });
 
     return response.text;

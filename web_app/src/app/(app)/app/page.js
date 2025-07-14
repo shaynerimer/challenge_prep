@@ -7,6 +7,7 @@ export default function HomePage() {
 
     const [jokeNeedsConfirmation, setJokeNeedsConfirmation] = useState(false);
     const [joke, setJoke] = useState(null);
+    const [recentJokes, setRecentJokes] = useState([]);
 
 
     return (
@@ -23,6 +24,7 @@ export default function HomePage() {
                 {!jokeNeedsConfirmation &&
                     <JokeGeneratorCard swapCard={(joke) => {
                         setJoke(joke)
+                        setRecentJokes([...recentJokes.slice(-4), joke])
                         setJokeNeedsConfirmation(true)
                     }} />
                 }

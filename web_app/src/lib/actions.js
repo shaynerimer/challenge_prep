@@ -4,14 +4,15 @@ import { DaprClient, HttpMethod, CommunicationProtocolEnum } from "@dapr/dapr";
 const DAPR_HOST = process.env.DAPR_HOST || "http://localhost";
 const DAPR_HTTP_PORT = process.env.DAPR_HTTP_PORT || "3500";
 
-export async function createJoke(prevState, formData) {
+export async function createJoke(prevState, formData, recentJokes) {
     const client = new DaprClient(DAPR_HOST, DAPR_HTTP_PORT, CommunicationProtocolEnum.HTTP);
 
     // Format Payload
     const payload = {
             cheesiness: formData.get('cheesiness'),
             predictability: formData.get('predictability'),
-            style: formData.get('style')
+            style: formData.get('style'),
+            recentJokes: recentJokes
     };
 
     // Invoke Service

@@ -4,7 +4,7 @@ import { createJoke } from '@/lib/actions';
 import { Alert } from '@/components/alert';
 import { CheckCircleIcon, XCircleIcon} from '@heroicons/react/24/outline';
  
-export function JokeGeneratorCard({ swapCard }) {
+export function JokeGeneratorCard({ swapCard, recentJokes }) {
 
     const [cheesiness, setCheesiness] = useState(2);
     const [predictability, setPredictability] = useState(1);
@@ -28,7 +28,7 @@ export function JokeGeneratorCard({ swapCard }) {
     // Handle submission and call server action
     const handleSubmit = async (prevState, formData) => {
         // Call createJoke action
-        const res = await createJoke(prevState, formData)
+        const res = await createJoke(prevState, formData, recentJokes)
         
         // If joke generation was successful, notify parent component
         if (res.status === 'success' && swapCard) {

@@ -20,10 +20,10 @@ const validateParams = fromCallback(({ sendBack, input: { cheesiness, predictabi
     }
 });
 
-const getJoke = fromCallback(async ({ sendBack, input: { cheesiness, predictability, style }}) => {
+const getJoke = fromCallback(async ({ sendBack, input: { cheesiness, predictability, style, recentJokes }}) => {
    
     try {
-        const joke = await generateJoke(cheesiness, predictability, style);
+        const joke = await generateJoke(cheesiness, predictability, style, recentJokes);
         sendBack({ type: 'done', data: { joke } });
     } catch (error) {
        sendBack({ type: 'error', data: { error: 'Unable to generate joke.', error_msg: error.message } });
@@ -57,6 +57,7 @@ const jokeMachine = setup({
         cheesiness: input.cheesiness || null,
         predictability: input.predictability || null,
         style: input.style || null,
+        recentJokes: input.recentJokes || [],
         joke: null,
         errorMessage: null,
         validated: false
@@ -89,7 +90,7 @@ const jokeMachine = setup({
         generating: {
             invoke: {
                 src: 'getJoke',
-                input: ({ context: { cheesiness, predictability, style } }) => ({ cheesiness, predictability, style }),
+                input: ({ context: { cheesiness, predictability, style, recentJokes } }) => ({ cheesiness, predictability, style, recentJokes }),
             },
             on: {
                 done: {
